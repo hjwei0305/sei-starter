@@ -1,0 +1,60 @@
+## ####################### 本地测试配置 #######################
+# 应用标识ID
+ECMP_APP_ID: 9B8D0AC8-2F53-6B47-6198-3B5327F655BF
+# 配置中心服务地址
+ECMP_CONFIG_CENTER: 10.4.68.77:2181
+
+mock:
+  user:
+    # 模拟的用户账号
+    account: 654321
+    # 模拟的租户代码
+    tenant: 10044
+
+#entitymanager:
+#  packagesToScan: com.ecmp.spring.boot.jpa.po
+
+#spring:
+##  output:
+##    ansi:
+##      enabled: ALWAYS
+#
+#  datasource:
+#    url: jdbc:mysql://127.0.0.1:3306/springboot?useUnicode=true&characterEncoding=utf-8
+#    username: root
+#    password:
+##    driver-class-name
+#
+#  jpa:
+#    properties:
+#      hibernate:
+#        hbm2ddl:
+#          auto: update
+#
+#        dialect: org.hibernate.dialect.MySQL5Dialect
+#
+#        show_sql: true
+#
+#  cache:
+#      type: REDIS
+#      #缓存的名字(可以不指定)
+#      cache-names: redis_cache , ehcache
+#      redis:
+#        #很重要，缓存的有效时间，以便缓存的过期（单位为毫秒）
+#        time-to-live: 60000
+#
+#  redis:
+#      #对应redis所在的IP地址
+#      host: 10.4.68.46
+#      #redis数据库对应的端口号
+#      port: 6379
+#      password: testRedis
+#      #使用第1个数据库，一共默认有10个(0-15)
+#      database: 3
+#      jedis:
+#          #一些常规配置
+#          pool:
+#              max-idle: 60
+#              min-idle: 30
+#              max-wait: 60000
+#              max-active: 200

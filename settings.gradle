@@ -1,1 +1,3 @@
 rootProject.name = 'sei-starter'
+
+include 'sei-service-starter'
