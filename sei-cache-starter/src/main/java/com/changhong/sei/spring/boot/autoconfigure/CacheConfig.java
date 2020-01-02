@@ -1,8 +1,11 @@
 package com.changhong.sei.spring.boot.autoconfigure;
 
-import com.changhong.sei.core.cache.CacheUtils;
+import com.changhong.sei.core.cache.CacheUtil;
+import com.changhong.sei.core.cache.DefaultCacheUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
@@ -19,6 +22,7 @@ import org.springframework.context.annotation.Configuration;
  * @date 2019/12/27 14:14
  */
 @Configuration
+@AutoConfigureAfter(RedisCacheConfig.class)
 @EnableCaching
 public class CacheConfig extends CachingConfigurerSupport {
 
@@ -38,8 +42,9 @@ public class CacheConfig extends CachingConfigurerSupport {
     }*/
 
     @Bean
-    public CacheUtils cacheUtils(CacheManager cacheManager){
-        return new CacheUtils(cacheManager);
+    @ConditionalOnMissingBean(CacheUtil.class)
+    public DefaultCacheUtil cacheUtils(CacheManager cacheManager) {
+        return new DefaultCacheUtil(cacheManager);
     }
 
     @Bean

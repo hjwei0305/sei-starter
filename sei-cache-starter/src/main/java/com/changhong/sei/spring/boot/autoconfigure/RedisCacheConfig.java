@@ -1,5 +1,8 @@
 package com.changhong.sei.spring.boot.autoconfigure;
 
+import com.changhong.sei.core.cache.CacheUtil;
+import com.changhong.sei.core.cache.redis.RedisUtil;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +23,6 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @Configuration
 @ConditionalOnClass(RedisOperations.class)
 public class RedisCacheConfig {
-
 
     //以下两种redisTemplate自由根据场景选择
     @SuppressWarnings({"rawtypes"})
@@ -72,5 +74,13 @@ public class RedisCacheConfig {
         StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
         stringRedisTemplate.setConnectionFactory(connectionFactory);
         return stringRedisTemplate;
+    }
+
+    @SuppressWarnings({"rawtypes"})
+    @Bean
+    @ConditionalOnBean(name = "redisTemplate")
+    @ConditionalOnMissingBean(CacheUtil.class)
+    public RedisUtil redisCacheUtil(RedisTemplate redisTemplate) {
+        return new RedisUtil(redisTemplate);
     }
 }
