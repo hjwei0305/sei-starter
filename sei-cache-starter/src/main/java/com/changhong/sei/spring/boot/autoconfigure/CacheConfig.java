@@ -28,22 +28,11 @@ public class CacheConfig extends CachingConfigurerSupport {
 
     private static final Logger log = LoggerFactory.getLogger(CacheConfig.class);
 
-    /*@Override
-    public CacheResolver cacheResolver() {
-        // 通过Guava实现的自定义堆内存缓存管理器
-        CacheManager guavaCacheManager = new GuavaCacheManager();
-        CacheManager redisCacheManager = redisCacheManager();
-        List<CacheManager> list = new ArrayList<>();
-        // 优先读取堆内存缓存
-        list.add(concurrentMapCacheManager);
-        // 堆内存缓存读取不到该key时再读取redis缓存
-        list.add(redisCacheManager);
-        return new CustomCacheResolver(list);
-    }*/
 
-    @Bean
+    @SuppressWarnings({"rawtypes"})
     @ConditionalOnMissingBean(CacheUtil.class)
-    public DefaultCacheUtil cacheUtils(CacheManager cacheManager) {
+    @Bean
+    public CacheUtil cacheUtils(CacheManager cacheManager) {
         return new DefaultCacheUtil(cacheManager);
     }
 

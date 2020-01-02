@@ -2,7 +2,6 @@ package com.changhong.sei.spring.boot.autoconfigure;
 
 import com.changhong.sei.core.cache.CacheUtil;
 import com.changhong.sei.core.cache.redis.RedisUtil;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -68,8 +67,8 @@ public class RedisCacheConfig {
         return template;
     }
 
-    @Bean
     @ConditionalOnMissingBean(StringRedisTemplate.class)
+    @Bean
     public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory connectionFactory) {
         StringRedisTemplate stringRedisTemplate = new StringRedisTemplate();
         stringRedisTemplate.setConnectionFactory(connectionFactory);
@@ -77,10 +76,9 @@ public class RedisCacheConfig {
     }
 
     @SuppressWarnings({"rawtypes"})
-    @Bean
-    @ConditionalOnBean(name = "redisTemplate")
     @ConditionalOnMissingBean(CacheUtil.class)
-    public RedisUtil redisCacheUtil(RedisTemplate redisTemplate) {
+    @Bean
+    public CacheUtil redisCacheUtil(RedisTemplate redisTemplate) {
         return new RedisUtil(redisTemplate);
     }
 }
