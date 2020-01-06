@@ -36,6 +36,7 @@ public class CacheConfig extends CachingConfigurerSupport {
         return new DefaultCacheUtil(cacheManager);
     }
 
+    @ConditionalOnMissingBean(KeyGenerator.class)
     @Bean
     @Override
     public KeyGenerator keyGenerator() {
@@ -57,6 +58,7 @@ public class CacheConfig extends CachingConfigurerSupport {
      *
      * @return CacheErrorHandler
      */
+    @ConditionalOnMissingBean(CacheErrorHandler.class)
     @Bean
     public CacheErrorHandler cacheErrorHandler() {
         return new LoggingCacheErrorHandler();
