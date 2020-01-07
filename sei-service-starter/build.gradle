@@ -8,14 +8,11 @@ apply plugin: 'io.spring.dependency-management'
 dependencies {
     compile("org.springframework.boot:spring-boot-starter")
     compile("org.springframework.boot:spring-boot-starter-aop")
-    compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.cloud:spring-cloud-starter-config")
     compile("org.springframework.cloud:spring-cloud-starter-stream-kafka")
     compile("org.springframework.cloud:spring-cloud-bus")
-
-    // 测试
-    testCompile('org.springframework.boot:spring-boot-starter-test')
+    compile("com.changhong.sei:core-service:$sei_version")
 }
 
 jar {
