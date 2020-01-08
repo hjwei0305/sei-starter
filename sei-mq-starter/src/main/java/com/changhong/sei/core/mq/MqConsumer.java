@@ -40,5 +40,5 @@ public abstract class MqConsumer {
      * 收到的监听消息后的业务处理
      * @param message 队列消息
      */
-    abstract void process(String message);
+    public abstract void process(String message);
 }
