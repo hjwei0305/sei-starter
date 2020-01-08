@@ -2,4 +2,5 @@ rootProject.name = 'sei-starter'
 
 include 'sei-service-starter'
 include 'sei-cache-starter'
+include 'sei-mq-starter'
 
