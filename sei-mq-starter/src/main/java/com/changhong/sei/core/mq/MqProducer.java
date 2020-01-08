@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.UUID;
+
 /**
  * <strong>实现功能:</strong>
  * <p>SEI消息队列生产者</p>
@@ -26,5 +28,14 @@ public class MqProducer {
      */
     public void send(String key, String message) {
         kafkaTemplate.send(kafkaTopic, key, message);
+    }
+
+    /**
+     * 发送消息
+     * @param message 消息
+     */
+    public void send(String message) {
+        String key = UUID.randomUUID().toString();
+        send(key, message);
     }
 }

@@ -4,7 +4,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
@@ -33,7 +32,7 @@ public abstract class MqConsumer {
             process(record.value());
         } catch (Exception e) {
             e.printStackTrace();
-            log.error("MqConsumer process message erro!"+e.getMessage());
+            log.error("MqConsumer process message error!"+e.getMessage());
         }
     }
 
