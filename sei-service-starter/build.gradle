@@ -19,9 +19,10 @@ bootJar { enabled = false }
 jar {
     manifest {
         attributes("Manifest-Version": "1.0")
-        attributes("Created-By": "Gradle")
-        attributes("Implementation-Title": "ECMP-$project.name")
+        attributes("Created-By": "${System.properties['java.version']} (${System.properties['java.vendor']} ${System.properties['java.vm.version']})".toString())
+        attributes("Implementation-Title": "SEI-$project.name")
         attributes("Implementation-Version": "$project.version")
+        attributes("Implementation-Vendor": "rcsit.cn")
         attributes("Build-Time": new Date().format("yyyy-MM-dd HH:mm:ss"))
     }
     //这里一定得要。在多模块下，不然编译失败，因为不会把信赖模块给打包。
