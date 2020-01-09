@@ -15,6 +15,7 @@ dependencies {
     compile("com.changhong.sei:core-service:$sei_version")
 }
 
+bootJar { enabled = false }
 jar {
     manifest {
         attributes("Manifest-Version": "1.0")

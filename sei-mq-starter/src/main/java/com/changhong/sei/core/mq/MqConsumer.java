@@ -17,6 +17,19 @@ import java.util.Objects;
 public abstract class MqConsumer {
     private static final Logger log = LoggerFactory.getLogger(MqConsumer.class);
     /**
+     * 消息的键值标识
+     */
+    private String key;
+
+    /**
+     * 获取当前消息的分类键
+     * @return 键值标识
+     */
+    protected String getKey() {
+        return key;
+    }
+
+    /**
      * 处理收到的监听消息
      *
      * @param record     消息纪录
@@ -27,8 +40,9 @@ public abstract class MqConsumer {
             return;
         }
         log.info("received key='{}' message = '{}'", record.key(), record.value());
-        //更新当前编号到数据库
+        // 执行业务处理逻辑
         try {
+            this.key = record.key();
             process(record.value());
         } catch (Exception e) {
             e.printStackTrace();

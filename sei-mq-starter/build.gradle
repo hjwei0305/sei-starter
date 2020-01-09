@@ -9,6 +9,7 @@ dependencies {
     compile("org.springframework.kafka:spring-kafka")
 }
 
+bootJar { enabled = false }
 jar {
     manifest {
         attributes("Manifest-Version": "1.0")

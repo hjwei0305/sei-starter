@@ -17,6 +17,7 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
+bootJar { enabled = false }
 jar {
     manifest {
         attributes("Manifest-Version": "1.0")
