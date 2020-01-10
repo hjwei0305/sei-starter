@@ -4,11 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+import org.springframework.http.*;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -42,13 +40,7 @@ public class ApiTemplate {
 
     public <T>T getByAppModuleCode(String appModuleCode,String path,Class<T> clz,Map<String,String> params){
         String url = getAppModuleUrl(appModuleCode,path);
-        if(Objects.nonNull(params)){
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-            params.entrySet().stream().forEach(o -> builder.queryParam(o.getKey(),o.getValue()));
-            return loadBalancedRestTemplate.getForObject(builder.build().encode().toString() , clz);
-        }else {
-            return loadBalancedRestTemplate.getForObject(url , clz);
-        }
+        return getExecute(url,params,clz,true);
     }
 
     public <T>T postByAppModuleCode(String appModuleCode, String path, Class<T> clz){
@@ -56,26 +48,12 @@ public class ApiTemplate {
     }
 
     public <T>T postByAppModuleCode(String appModuleCode,String path,Class<T> clz, Object params){
-        //headers
-        HttpHeaders headers = getHttpHeaders();
-        //HttpEntity
-        HttpEntity<Object> requestEntity = null;
-        if(Objects.nonNull(params)){
-            requestEntity = new HttpEntity<Object>(params, headers);
-        }
         String url = getAppModuleUrl(appModuleCode, path);
-        return loadBalancedRestTemplate.postForObject(url,requestEntity,clz);
+        return postExecute(url,new HttpEntity<Object>(params, getHttpHeaders()),clz,true);
     }
 
     public <T>T postByUrl(String url,Class<T> clz, Object params){
-        //headers
-        HttpHeaders headers = getHttpHeaders();
-        //HttpEntity
-        HttpEntity<Object> requestEntity = null;
-        if(Objects.nonNull(params)){
-            requestEntity = new HttpEntity<Object>(params, headers);
-        }
-        return urlRestTemplate.postForObject(url,requestEntity,clz);
+        return postExecute(url,new HttpEntity<Object>(params, getHttpHeaders()),clz,false);
     }
 
     public void deleteByAppModuleCode(String appModuleCode,String path,String id){
@@ -87,13 +65,7 @@ public class ApiTemplate {
     }
 
     public <T>T getByUrl(String url,Class<T> clz,Map<String,String> params){
-        if(Objects.nonNull(params)){
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-            params.entrySet().stream().forEach(o -> builder.queryParam(o.getKey(),o.getValue()));
-            return urlRestTemplate.getForObject(builder.build().encode().toString() , clz);
-        }else {
-            return urlRestTemplate.getForObject(url , clz);
-        }
+        return getExecute(url,params,clz,false);
     }
 
     private String getAppModuleUrl(String appModuleCode,String path){
@@ -104,6 +76,41 @@ public class ApiTemplate {
             url =  url + "/" + path;
         }
         return url;
+    }
+
+    private <T>T postExecute(String url, HttpEntity<Object> requestEntity, Class<T> clz,boolean isBalanced){
+        ResponseEntity<T> result = null;
+        if(isBalanced){
+            result = loadBalancedRestTemplate.exchange(url, HttpMethod.POST, requestEntity, clz);
+        }else {
+            result = urlRestTemplate.exchange(url, HttpMethod.POST, requestEntity, clz);
+        }
+        return result.getBody();
+    }
+
+    private <T>T getExecute(String url, Map<String,String> params, Class<T> clz,boolean isBalanced){
+        ResponseEntity<T> result = null;
+        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(null,getHttpHeaders());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+        if(!CollectionUtils.isEmpty(params)){
+            params.forEach((k,v) -> builder.queryParam(k,v));
+        }
+        url = builder.build().encode().toString();
+        if(isBalanced){
+            if(CollectionUtils.isEmpty(params)){
+                result = loadBalancedRestTemplate.exchange(url, HttpMethod.GET, httpEntity, clz);
+            }else{
+                result = loadBalancedRestTemplate.exchange(url, HttpMethod.GET, httpEntity, clz, params);
+            }
+
+        }else {
+            if(CollectionUtils.isEmpty(params)){
+                result = urlRestTemplate.exchange(url, HttpMethod.GET, httpEntity, clz);
+            }else {
+                result = urlRestTemplate.exchange(url, HttpMethod.GET, httpEntity, clz,params);
+            }
+        }
+        return result.getBody();
     }
 
     private HttpHeaders getHttpHeaders(){
