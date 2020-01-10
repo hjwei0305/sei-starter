@@ -1,18 +1,27 @@
 apply plugin: 'java'
+apply plugin: 'maven'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+
 
 // java编译的时候缺省状态下会因为中文字符而失败
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
 dependencies {
     compile("org.springframework.boot:spring-boot-starter")
+    compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-aop")
     compile("org.springframework.boot:spring-boot-starter-actuator")
     compile("org.springframework.cloud:spring-cloud-starter-config")
     compile("org.springframework.cloud:spring-cloud-starter-stream-kafka")
     compile("org.springframework.cloud:spring-cloud-bus")
-    compile("com.changhong.sei:core-service:$sei_version")
+//    compile("com.changhong.sei:core-service:$sei_version")
+    compile("org.springframework.cloud:spring-cloud-starter-zookeeper-discovery")
+    compile("org.springframework.cloud:spring-cloud-starter-openfeign")
+    compile("com.squareup.okhttp3:okhttp:$okhttp_version")
+
+    // 测试
+    testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
 bootJar { enabled = false }
@@ -28,6 +37,7 @@ jar {
     //这里一定得要。在多模块下，不然编译失败，因为不会把信赖模块给打包。
     enabled = true
 }
+
 
 /////////////////////////////////////上传Maven仓库////////////////////////////////////////
 //打包源代码
