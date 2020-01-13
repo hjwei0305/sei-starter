@@ -1,5 +1,6 @@
 package com.changhong.sei.apitemplate;
 
+import com.changhong.sei.core.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ import java.util.*;
 @Component
 public class ApiTemplate {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ApiTemplate.class);
+    private static final Logger log = LoggerFactory.getLogger(ApiTemplate.class);
 
     @Autowired
     @Qualifier("loadBalancedRestTemplate")
@@ -79,16 +80,19 @@ public class ApiTemplate {
     }
 
     private <T>T postExecute(String url, HttpEntity<Object> requestEntity, Class<T> clz,boolean isBalanced){
+        log.info("ApiTemplate post 请求，url:{},params:{}",url, JsonUtils.toJson(requestEntity.getBody()));
         ResponseEntity<T> result = null;
         if(isBalanced){
             result = loadBalancedRestTemplate.exchange(url, HttpMethod.POST, requestEntity, clz);
         }else {
             result = urlRestTemplate.exchange(url, HttpMethod.POST, requestEntity, clz);
         }
+        log.info("ApiTemplate post 请求完成，httpStatus:{}",result.getStatusCode());
         return result.getBody();
     }
 
     private <T>T getExecute(String url, Map<String,String> params, Class<T> clz,boolean isBalanced){
+        log.info("ApiTemplate get 请求，url:{},params:{}",url, JsonUtils.toJson(params));
         ResponseEntity<T> result = null;
         HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(null,getHttpHeaders());
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
@@ -110,6 +114,7 @@ public class ApiTemplate {
                 result = urlRestTemplate.exchange(url, HttpMethod.GET, httpEntity, clz,params);
             }
         }
+        log.info("ApiTemplate post 请求完成，httpStatus:{}",result.getStatusCode());
         return result.getBody();
     }
 
@@ -117,6 +122,9 @@ public class ApiTemplate {
         //headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf("application/json;UTF-8"));
+        if(log.isDebugEnabled()){
+            log.debug("默认header组装完成，header:{}",headers.toString());
+        }
         return headers;
     }
 
