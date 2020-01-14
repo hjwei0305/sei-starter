@@ -1,5 +1,6 @@
 package com.changhong.sei.apitemplate;
 
+import com.changhong.sei.core.context.ContextUtil;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.slf4j.Logger;
@@ -11,7 +12,8 @@ public class FeignBasicAuthRequestInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate template) {
-        template.header("Authorization", "Authorization");
+        // 设置当前token到header, 以传递token
+        template.header(ContextUtil.HEADER_TOKEN_KEY, ContextUtil.getToken());
         if(log.isDebugEnabled()){
             log.debug("feign 默认组装header : {}",template.headers());
         }

@@ -12,9 +12,6 @@ dependencies {
     compileOnly("org.springframework.boot:spring-boot-starter-data-redis")
     compileOnly("com.github.ben-manes.caffeine:caffeine")
     compileOnly("net.sf.ehcache:ehcache")
-    compile("org.springframework.boot:spring-boot-starter-actuator")
-    // 测试
-    testCompile('org.springframework.boot:spring-boot-starter-test')
 }
 
 bootJar { enabled = false }
