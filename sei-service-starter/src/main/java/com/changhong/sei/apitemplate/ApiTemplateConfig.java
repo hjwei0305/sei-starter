@@ -60,12 +60,8 @@ public class ApiTemplateConfig {
         return new FeignBasicAuthRequestInterceptor();
     }
 
-    /**
-     * 创建Feign契约，支持多继承
-     * @return SpringMvcContract
-     */
     @Bean
-    public Contract feignContract() {
-        return new HierarchicalContract();
+    public Contract feignContract(){
+        return new MultipleInheritContract();
     }
 }
