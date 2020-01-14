@@ -1,12 +1,22 @@
 package com.changhong.sei.apitemplate;
 
+import feign.Contract;
 import org.springframework.cloud.bus.ConditionalOnBusEnabled;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.openfeign.AnnotatedParameterProcessor;
+import org.springframework.cloud.openfeign.FeignFormatterRegistrar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.convert.ConversionService;
+import org.springframework.format.support.DefaultFormattingConversionService;
+import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * 实现功能：
@@ -17,8 +27,6 @@ import org.springframework.web.client.RestTemplate;
  */
 @Configuration
 public class ApiTemplateConfig {
-
-
 
     @Bean(name = "loadBalancedRestTemplate")
     @Primary
@@ -50,5 +58,14 @@ public class ApiTemplateConfig {
     @Bean
     public FeignBasicAuthRequestInterceptor basicAuthRequestInterceptor() {
         return new FeignBasicAuthRequestInterceptor();
+    }
+
+    /**
+     * 创建Feign契约，支持多继承
+     * @return SpringMvcContract
+     */
+    @Bean
+    public Contract feignContract() {
+        return new HierarchicalContract();
     }
 }
