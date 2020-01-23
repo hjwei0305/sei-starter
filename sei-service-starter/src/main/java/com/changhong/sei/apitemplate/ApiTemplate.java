@@ -1,6 +1,6 @@
 package com.changhong.sei.apitemplate;
 
-import com.changhong.sei.core.context.ContextUtil;
+import com.changhong.sei.core.context.HeaderHelper;
 import com.changhong.sei.core.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,7 +13,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import java.util.*;
+import java.util.Map;
 
 /**
  * 实现功能：
@@ -123,8 +123,11 @@ public class ApiTemplate {
         //headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.valueOf("application/json;UTF-8"));
-        // 设置当前token到header, 以传递token
-        headers.add(ContextUtil.HEADER_TOKEN_KEY, ContextUtil.getToken());
+        // 从可传播的线程全局变量中读取并设置到请求header中
+        Map<String, String> headerMap = HeaderHelper.getInstance().getRequestHeaderInfo();
+        if (!headerMap.isEmpty()) {
+            headers.setAll(headerMap);
+        }
         if (log.isDebugEnabled()) {
             log.debug("默认header组装完成，header:{}", headers.toString());
         }

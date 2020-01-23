@@ -1,10 +1,12 @@
 package com.changhong.sei.apitemplate;
 
-import com.changhong.sei.core.context.ContextUtil;
+import com.changhong.sei.core.context.HeaderHelper;
 import feign.RequestInterceptor;
 import feign.RequestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Map;
 
 public class FeignBasicAuthRequestInterceptor implements RequestInterceptor {
 
@@ -12,8 +14,14 @@ public class FeignBasicAuthRequestInterceptor implements RequestInterceptor {
 
     @Override
     public void apply(RequestTemplate template) {
-        // 设置当前token到header, 以传递token
-        template.header(ContextUtil.HEADER_TOKEN_KEY, ContextUtil.getToken());
+        // 从可传播的线程全局变量中读取并设置到请求header中
+        Map<String, String> headerMap = HeaderHelper.getInstance().getRequestHeaderInfo();
+        if (!headerMap.isEmpty()) {
+            for (Map.Entry<String, String> entry : headerMap.entrySet()) {
+                template.header(entry.getKey(), entry.getValue());
+            }
+        }
+
         if(log.isDebugEnabled()){
             log.debug("feign 默认组装header : {}",template.headers());
         }
