@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -39,19 +40,37 @@ public class ApiTemplate {
         return getByAppModuleCode(appModuleCode, path, clz, null);
     }
 
+    public <T> T getByAppModuleCode(String appModuleCode, String path, ParameterizedTypeReference<T> responseType) {
+        return getByAppModuleCode(appModuleCode, path, responseType, null);
+    }
+
 
     public <T> T getByAppModuleCode(String appModuleCode, String path, Class<T> clz, Map<String, String> params) {
         String url = getAppModuleUrl(appModuleCode, path);
         return getExecute(url, params, clz, true);
     }
 
+    public <T> T getByAppModuleCode(String appModuleCode, String path, ParameterizedTypeReference<T> responseType, Map<String, String> params) {
+        String url = getAppModuleUrl(appModuleCode, path);
+        return getExecute(url, params, responseType, true);
+    }
+
     public <T> T postByAppModuleCode(String appModuleCode, String path, Class<T> clz) {
         return postByAppModuleCode(appModuleCode, path, clz, null);
+    }
+
+    public <T> T postByAppModuleCode(String appModuleCode, String path, ParameterizedTypeReference<T> responseType) {
+        return postByAppModuleCode(appModuleCode, path, responseType, null);
     }
 
     public <T> T postByAppModuleCode(String appModuleCode, String path, Class<T> clz, Object params) {
         String url = getAppModuleUrl(appModuleCode, path);
         return postExecute(url, new HttpEntity<Object>(params, getHttpHeaders()), clz, true);
+    }
+
+    public <T> T postByAppModuleCode(String appModuleCode, String path,ParameterizedTypeReference<T> responseType, Object params) {
+        String url = getAppModuleUrl(appModuleCode, path);
+        return postExecute(url, new HttpEntity<Object>(params, getHttpHeaders()), responseType, true);
     }
 
     public <T> T postByUrl(String url, Class<T> clz, Object params) {
@@ -78,6 +97,18 @@ public class ApiTemplate {
             url = url + "/" + path;
         }
         return url;
+    }
+
+    private <T> T postExecute(String url, HttpEntity<Object> requestEntity, ParameterizedTypeReference<T> responseType, boolean isBalanced) {
+        log.info("ApiTemplate post 请求，url:{},params:{}", url, JsonUtils.toJson(requestEntity.getBody()));
+        ResponseEntity<T> result = null;
+        if (isBalanced) {
+            result = loadBalancedRestTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType);
+        } else {
+            result = urlRestTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType);
+        }
+        log.info("ApiTemplate post 请求完成，httpStatus:{}", result.getStatusCode());
+        return result.getBody();
     }
 
     private <T> T postExecute(String url, HttpEntity<Object> requestEntity, Class<T> clz, boolean isBalanced) {
@@ -113,6 +144,33 @@ public class ApiTemplate {
                 result = urlRestTemplate.exchange(url, HttpMethod.GET, httpEntity, clz);
             } else {
                 result = urlRestTemplate.exchange(url, HttpMethod.GET, httpEntity, clz, params);
+            }
+        }
+        log.info("ApiTemplate post 请求完成，httpStatus:{}", result.getStatusCode());
+        return result.getBody();
+    }
+
+    private <T> T getExecute(String url, Map<String, String> params, ParameterizedTypeReference<T> responseType, boolean isBalanced) {
+        log.info("ApiTemplate get 请求，url:{},params:{}", url, JsonUtils.toJson(params));
+        ResponseEntity<T> result = null;
+        HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(null, getHttpHeaders());
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+        if (!CollectionUtils.isEmpty(params)) {
+            params.forEach((k, v) -> builder.queryParam(k, v));
+        }
+        url = builder.build().encode().toString();
+        if (isBalanced) {
+            if (CollectionUtils.isEmpty(params)) {
+                result = loadBalancedRestTemplate.exchange(url, HttpMethod.GET, httpEntity, responseType);
+            } else {
+                result = loadBalancedRestTemplate.exchange(url, HttpMethod.GET, httpEntity, responseType, params);
+            }
+
+        } else {
+            if (CollectionUtils.isEmpty(params)) {
+                result = urlRestTemplate.exchange(url, HttpMethod.GET, httpEntity, responseType);
+            } else {
+                result = urlRestTemplate.exchange(url, HttpMethod.GET, httpEntity, responseType, params);
             }
         }
         log.info("ApiTemplate post 请求完成，httpStatus:{}", result.getStatusCode());
