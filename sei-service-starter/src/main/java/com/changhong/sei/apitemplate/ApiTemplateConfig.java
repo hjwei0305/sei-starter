@@ -1,22 +1,14 @@
 package com.changhong.sei.apitemplate;
 
+import com.changhong.sei.core.context.mock.MockUser;
+import com.changhong.sei.mock.ServerMockUser;
 import feign.Contract;
-import org.springframework.cloud.bus.ConditionalOnBusEnabled;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
-import org.springframework.cloud.openfeign.AnnotatedParameterProcessor;
-import org.springframework.cloud.openfeign.FeignFormatterRegistrar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.convert.ConversionService;
-import org.springframework.format.support.DefaultFormattingConversionService;
-import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.client.OkHttp3ClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * 实现功能：
@@ -62,5 +54,11 @@ public class ApiTemplateConfig {
     @Bean
     public Contract feignContract(){
         return new MultipleInheritContract();
+    }
+
+    @Primary
+    @Bean
+    public MockUser mockUser() {
+        return new ServerMockUser();
     }
 }

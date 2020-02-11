@@ -1,16 +1,11 @@
 package com.changhong.sei.utils;
 
-import com.changhong.sei.apitemplate.ApiTemplate;
+import com.changhong.sei.core.config.properties.mock.MockUserProperties;
 import com.changhong.sei.core.context.ApplicationContextHolder;
-import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
-import com.changhong.sei.core.dto.ResultData;
-import com.chonghong.sei.exception.ServiceException;
-import com.chonghong.sei.util.thread.ThreadLocalUtil;
-import com.google.common.collect.Maps;
-import org.modelmapper.ModelMapper;
-
-import java.util.Map;
+import com.changhong.sei.core.context.mock.MockUser;
+import com.changhong.sei.core.log.LogUtil;
+import com.changhong.sei.mock.ServerMockUser;
 
 /**
  * 实现功能：
@@ -19,9 +14,6 @@ import java.util.Map;
  * @version 1.0.00  2020-02-11 13:43
  */
 public class MockUserHelper {
-
-    private static String AUTH_SERVICE_CODE = "auth-service";
-    private static String AUTH_SERVICE_PATH = "/account/getByTenantAccount";
 
     private MockUserHelper() {
     }
@@ -35,32 +27,13 @@ public class MockUserHelper {
      * @return 返回设置的账户信息
      */
     public static SessionUser mockUser(String tenant, String account) {
-        Map<String, String> params = Maps.newHashMap();
-        params.put("tenant", tenant);
-        params.put("account", account);
         try {
-            SessionUser sessionUser = new SessionUser();
-            // 生成token
-            ContextUtil.generateToken(sessionUser);
-            // 设置token到可传播的线程全局变量中
-            ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
-
-            ApiTemplate template = ApplicationContextHolder.getBean(ApiTemplate.class);
-            ResultData resultData = template.getByAppModuleCode(AUTH_SERVICE_CODE, AUTH_SERVICE_PATH, ResultData.class, params);
-            if (resultData.successful()) {
-                new ModelMapper().map(resultData.getData(), sessionUser);
-                // 生成token
-                ContextUtil.generateToken(sessionUser);
-
-                ThreadLocalUtil.setLocalVar(SessionUser.class.getSimpleName(), sessionUser);
-                // 设置token到可传播的线程全局变量中
-                ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
-                return sessionUser;
-            } else {
-                throw new ServiceException("模拟用户错误: " + resultData.getMessage());
-            }
+            MockUser mockUser = ApplicationContextHolder.getBean(ServerMockUser.class);
+            return mockUser.mockUser(tenant, account);
         } catch (Exception e) {
-            throw new ServiceException("模拟用户异常.", e);
+            LogUtil.error("模拟用户异常", e);
+            MockUserProperties mockUser = new MockUserProperties();
+            return mockUser.mock();
         }
     }
 }
