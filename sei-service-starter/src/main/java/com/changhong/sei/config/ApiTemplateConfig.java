@@ -1,5 +1,9 @@
-package com.changhong.sei.apitemplate;
+package com.changhong.sei.config;
 
+import com.changhong.sei.apitemplate.ApiTemplate;
+import com.changhong.sei.apitemplate.FeignBasicAuthRequestInterceptor;
+import com.changhong.sei.apitemplate.MultipleInheritContract;
+import com.changhong.sei.apitemplate.SeiRestTemplateErrorHandle;
 import com.changhong.sei.core.context.mock.MockUser;
 import com.changhong.sei.mock.ServerMockUser;
 import feign.Contract;
@@ -41,7 +45,6 @@ public class ApiTemplateConfig {
         return new ApiTemplate();
     }
 
-
     /**
      * 创建Feign请求拦截器，在发送请求前设置认证的token,各个微服务将token设置到环境变量中来达到通用
      * @return
@@ -56,6 +59,9 @@ public class ApiTemplateConfig {
         return new MultipleInheritContract();
     }
 
+    /**
+     * 服务的模拟用户
+     */
     @Primary
     @Bean
     public MockUser mockUser() {

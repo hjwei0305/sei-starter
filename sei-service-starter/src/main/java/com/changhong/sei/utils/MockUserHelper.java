@@ -13,6 +13,7 @@ import com.changhong.sei.mock.ServerMockUser;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-02-11 13:43
  */
+@Deprecated
 public class MockUserHelper {
 
     private MockUserHelper() {

@@ -37,6 +37,8 @@ public class ServerMockUser implements MockUser {
         params.put("account", account);
         try {
             SessionUser sessionUser = new SessionUser();
+            sessionUser.setTenantCode(tenant);
+            sessionUser.setAccount(account);
             // 生成token
             ContextUtil.generateToken(sessionUser);
             // 设置token到可传播的线程全局变量中
