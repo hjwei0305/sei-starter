@@ -3,8 +3,6 @@ package com.changhong.sei.utils;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.mock.MockUser;
 import com.chonghong.sei.util.thread.ThreadLocalHolder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -14,10 +12,12 @@ import java.util.concurrent.CompletableFuture;
  * @author 王锦光 wangjg
  * @version 2020-02-15 15:36
  */
-@Component
 public class AsyncRunUtil {
-    @Autowired
     private MockUser mockUser;
+
+    public AsyncRunUtil(MockUser mockUser) {
+        this.mockUser = mockUser;
+    }
 
     /**
      * 异步执行一个方法（并传递当前内部Token）
