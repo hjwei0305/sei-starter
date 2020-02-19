@@ -4,6 +4,4 @@ include 'sei-service-starter'
 include 'sei-cache-starter'
 include 'sei-mq-starter'
 include 'sei-test-starter'
-//include 'sei-config-starter'
-include 'sei-bus-starter'
 

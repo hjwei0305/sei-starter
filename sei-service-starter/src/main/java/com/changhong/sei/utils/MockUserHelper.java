@@ -34,7 +34,7 @@ public class MockUserHelper {
         } catch (Exception e) {
             LogUtil.error("模拟用户异常", e);
             MockUserProperties mockUser = new MockUserProperties();
-            return mockUser.mock();
+            return new SessionUser();
         }
     }
 }

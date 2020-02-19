@@ -8,7 +8,6 @@ apply plugin: 'io.spring.dependency-management'
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
 dependencies {
-    compile project(":sei-bus-starter")
     compile("com.changhong.sei:sei-core-service:$sei_version")
 
     compile("org.springframework.boot:spring-boot-starter")
