@@ -6,8 +6,8 @@ import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.context.mock.MockUser;
 import com.changhong.sei.core.dto.ResultData;
-import com.chonghong.sei.exception.ServiceException;
-import com.chonghong.sei.util.thread.ThreadLocalUtil;
+import com.changhong.sei.exception.ServiceException;
+import com.changhong.sei.util.thread.ThreadLocalUtil;
 import com.google.common.collect.Maps;
 import org.modelmapper.ModelMapper;
 

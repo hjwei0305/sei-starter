@@ -2,7 +2,7 @@ package com.changhong.sei.utils;
 
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.mock.MockUser;
-import com.chonghong.sei.util.thread.ThreadLocalHolder;
+import com.changhong.sei.util.thread.ThreadLocalHolder;
 
 import java.util.concurrent.CompletableFuture;
 
