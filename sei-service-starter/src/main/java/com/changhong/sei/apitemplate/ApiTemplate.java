@@ -44,7 +44,6 @@ public class ApiTemplate {
         return getByAppModuleCode(appModuleCode, path, responseType, null);
     }
 
-
     public <T> T getByAppModuleCode(String appModuleCode, String path, Class<T> clz, Map<String, String> params) {
         String url = getAppModuleUrl(appModuleCode, path);
         return getExecute(url, params, clz, true);
@@ -191,6 +190,4 @@ public class ApiTemplate {
         }
         return headers;
     }
-
-
 }
