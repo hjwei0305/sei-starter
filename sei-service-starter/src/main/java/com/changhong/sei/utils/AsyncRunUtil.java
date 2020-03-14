@@ -9,11 +9,10 @@ import java.util.concurrent.CompletableFuture;
 /**
  * 实现功能: 异步执行方法的工具类
  *
- * @deprecated 直接使用标准的springboot 异步注解 @Async. {@link com.changhong.sei.core.context.async.ContextTaskDecorator}
+ * 对于始终以异步方式执行的方法应该直接使用标准的springboot异步注解 @Async
  * @author 王锦光 wangjg
  * @version 2020-02-15 15:36
  */
-@Deprecated
 public class AsyncRunUtil {
     private MockUser mockUser;
 
