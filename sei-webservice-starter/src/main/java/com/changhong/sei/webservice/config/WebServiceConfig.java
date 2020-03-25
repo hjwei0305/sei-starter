@@ -31,7 +31,7 @@ public class WebServiceConfig implements InitializingBean{
     public ServletRegistrationBean cxfServlet() {
         ServletRegistrationBean<CXFServlet> registration = new ServletRegistrationBean<>(new CXFServlet());
         registration.setName("cxfServlet");
-        registration.addUrlMappings("/*");
+        registration.addUrlMappings("/webservice/*");
         return registration;
     }
     @Bean(name = Bus.DEFAULT_BUS_ID)
