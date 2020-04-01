@@ -19,8 +19,8 @@ import org.springframework.web.client.RestTemplate;
  * 实现功能：
  * 平台调用API服务的客户端工具
  *
- * @author 王锦光(wangj)
- * @version 1.0.00      2017-03-27 10:07
+ * @author 刘松林
+ * @version 1.0.00      2019-12-01
  */
 @Configuration
 public class ApiTemplateConfig {
@@ -28,22 +28,22 @@ public class ApiTemplateConfig {
     @Bean(name = "loadBalancedRestTemplate")
     @Primary
     @LoadBalanced
-    RestTemplate loadBalancedRestTemplate() {
+    public RestTemplate loadBalancedRestTemplate() {
         RestTemplate restTemplate = new RestTemplate(new OkHttp3ClientHttpRequestFactory());
         restTemplate.setErrorHandler(new SeiRestTemplateErrorHandle());
         return restTemplate;
     }
 
     @Bean(name = "urlRestTemplate")
-    RestTemplate urlRestTemplate(){
+    public RestTemplate urlRestTemplate(){
         RestTemplate restTemplate = new RestTemplate(new OkHttp3ClientHttpRequestFactory());
         restTemplate.setErrorHandler(new SeiRestTemplateErrorHandle());
         return restTemplate;
     }
 
     @Bean
-    ApiTemplate apiTemplate(){
-        return new ApiTemplate();
+    public ApiTemplate apiTemplate(RestTemplate loadBalancedRestTemplate,RestTemplate urlRestTemplate){
+        return new ApiTemplate(loadBalancedRestTemplate,urlRestTemplate);
     }
 
     /**

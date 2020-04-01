@@ -28,13 +28,14 @@ public class ApiTemplate {
 
     private static final Logger log = LoggerFactory.getLogger(ApiTemplate.class);
 
-    @Autowired
-    @Qualifier("loadBalancedRestTemplate")
-    private RestTemplate loadBalancedRestTemplate;
+    private final RestTemplate loadBalancedRestTemplate;
 
-    @Autowired
-    @Qualifier("urlRestTemplate")
-    private RestTemplate urlRestTemplate;
+    private final RestTemplate urlRestTemplate;
+
+    public ApiTemplate(RestTemplate loadBalancedRestTemplate,RestTemplate urlRestTemplate){
+        this.loadBalancedRestTemplate = loadBalancedRestTemplate;
+        this.urlRestTemplate = urlRestTemplate;
+    }
 
     public <T> T getByAppModuleCode(String appModuleCode, String path, Class<T> clz) {
         return getByAppModuleCode(appModuleCode, path, clz, null);
