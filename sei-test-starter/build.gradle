@@ -6,7 +6,12 @@ apply plugin: 'io.spring.dependency-management'
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
 dependencies {
-    compile("com.changhong.sei:sei-core-test:$sei_version")
+
+    // 内部模块依赖
+    compile("com.changhong.sei:sei-commons:$sei_version")
+
+    // 第三方的依赖
+    compile("org.springframework.boot:spring-boot-starter-test")
 }
 
 bootJar { enabled = false }
