@@ -1,6 +1,5 @@
 package com.changhong.sei.utils;
 
-import com.changhong.sei.core.config.properties.mock.MockUserProperties;
 import com.changhong.sei.core.context.ApplicationContextHolder;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.context.mock.MockUser;
@@ -13,7 +12,6 @@ import com.changhong.sei.mock.ServerMockUser;
  * @author 马超(Vision.Mac)
  * @version 1.0.00  2020-02-11 13:43
  */
-@Deprecated
 public class MockUserHelper {
 
     private MockUserHelper() {
@@ -33,7 +31,6 @@ public class MockUserHelper {
             return mockUser.mockUser(tenant, account);
         } catch (Exception e) {
             LogUtil.error("模拟用户异常", e);
-            MockUserProperties mockUser = new MockUserProperties();
             return new SessionUser();
         }
     }

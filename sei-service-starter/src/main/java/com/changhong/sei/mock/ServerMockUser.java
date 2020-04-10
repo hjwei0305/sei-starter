@@ -7,6 +7,7 @@ import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.context.mock.MockUser;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.exception.SeiException;
 import com.changhong.sei.exception.ServiceException;
 import com.changhong.sei.util.thread.ThreadLocalUtil;
 import com.google.common.collect.Maps;
@@ -35,6 +36,10 @@ public class ServerMockUser implements MockUser {
      */
     @Override
     public SessionUser mockUser(String tenant, String account) {
+        if (!ThreadLocalUtil.isAvailable()) {
+            throw new SeiException("ThreadLocalHolder还没有初始化,请先调用ThreadLocalHolder.begin(),并在当前线程任务完成前须调用ThreadLocalHolder.end()释放资源");
+        }
+
         Map<String, String> params = Maps.newHashMap();
         params.put("tenant", tenant);
         params.put("account", account);
@@ -74,6 +79,10 @@ public class ServerMockUser implements MockUser {
      */
     @Override
     public SessionUser mockUser(MockUserProperties mockUser) {
+        if (!ThreadLocalUtil.isAvailable()) {
+            throw new SeiException("ThreadLocalHolder还没有初始化,请先调用ThreadLocalHolder.begin(),并在当前线程任务完成前须调用ThreadLocalHolder.end()释放资源");
+        }
+
         Map<String, String> params = Maps.newHashMap();
         String tenant = mockUser.getTenantCode();
         String account = mockUser.getAccount();
@@ -85,6 +94,7 @@ public class ServerMockUser implements MockUser {
             sessionUser.setAccount(account);
             // 生成token
             ContextUtil.generateToken(sessionUser);
+
             // 设置token到可传播的线程全局变量中
             ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
 
