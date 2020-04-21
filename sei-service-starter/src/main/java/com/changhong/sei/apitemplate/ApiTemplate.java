@@ -104,6 +104,10 @@ public class ApiTemplate {
         return getExecute(url, params, clz, false);
     }
 
+    public <T> T getByUrl(String url, ParameterizedTypeReference<T> responseType, Map<String, String> params) {
+        return getExecute(url, params, responseType, false);
+    }
+
     private String getAppModuleUrl(String appModuleCode, String path) {
         String url = "http://" + appModuleCode;
         if (path.startsWith("/")) {
