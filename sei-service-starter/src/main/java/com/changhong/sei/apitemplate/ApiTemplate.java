@@ -4,8 +4,6 @@ import com.changhong.sei.core.context.HeaderHelper;
 import com.changhong.sei.core.util.JsonUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
@@ -32,7 +30,7 @@ public class ApiTemplate {
 
     private final RestTemplate urlRestTemplate;
 
-    public ApiTemplate(RestTemplate loadBalancedRestTemplate,RestTemplate urlRestTemplate){
+    public ApiTemplate(RestTemplate loadBalancedRestTemplate, RestTemplate urlRestTemplate) {
         this.loadBalancedRestTemplate = loadBalancedRestTemplate;
         this.urlRestTemplate = urlRestTemplate;
     }
@@ -68,9 +66,26 @@ public class ApiTemplate {
         return postExecute(url, new HttpEntity<Object>(params, getHttpHeaders()), clz, true);
     }
 
-    public <T> T postByAppModuleCode(String appModuleCode, String path,ParameterizedTypeReference<T> responseType, Object params) {
+    public <T> T postByAppModuleCode(String appModuleCode, String path, ParameterizedTypeReference<T> responseType, Object params) {
         String url = getAppModuleUrl(appModuleCode, path);
         return postExecute(url, new HttpEntity<Object>(params, getHttpHeaders()), responseType, true);
+    }
+
+    public <T> T uploadFileByAppModuleCode(String appModuleCode, String path, ParameterizedTypeReference<T> responseType, Object params) {
+        String url = getAppModuleUrl(appModuleCode, path);
+        HttpHeaders headers = getHttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("multipart/form-data; charset=UTF-8"));
+        return postExecute(url, new HttpEntity<Object>(params, headers), responseType, true);
+    }
+
+    public <T> T uploadFileByUrl(String url, ParameterizedTypeReference<T> responseType, Object params) {
+        HttpHeaders headers = getHttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("multipart/form-data; charset=UTF-8"));
+        return postExecute(url, new HttpEntity<Object>(params, headers), responseType, false);
+    }
+
+    public <T> T postByUrl(String url, ParameterizedTypeReference<T> responseType, Object params) {
+        return postExecute(url, new HttpEntity<Object>(params, getHttpHeaders()), responseType, false);
     }
 
     public <T> T postByUrl(String url, Class<T> clz, Object params) {
@@ -100,7 +115,7 @@ public class ApiTemplate {
     }
 
     private <T> T postExecute(String url, HttpEntity<Object> requestEntity, ParameterizedTypeReference<T> responseType, boolean isBalanced) {
-        log.info("ApiTemplate post 请求，url:{},params:{}", url, JsonUtils.toJson(requestEntity.getBody()));
+//        log.info("ApiTemplate post 请求，url:{},params:{}", url, JsonUtils.toJson(requestEntity.getBody()));
         ResponseEntity<T> result = null;
         if (isBalanced) {
             result = loadBalancedRestTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType);
@@ -112,7 +127,7 @@ public class ApiTemplate {
     }
 
     private <T> T postExecute(String url, HttpEntity<Object> requestEntity, Class<T> clz, boolean isBalanced) {
-        log.info("ApiTemplate post 请求，url:{},params:{}", url, JsonUtils.toJson(requestEntity.getBody()));
+//        log.info("ApiTemplate post 请求，url:{},params:{}", url, JsonUtils.toJson(requestEntity.getBody()));
         ResponseEntity<T> result = null;
         if (isBalanced) {
             result = loadBalancedRestTemplate.exchange(url, HttpMethod.POST, requestEntity, clz);
