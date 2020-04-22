@@ -1,7 +1,11 @@
 package com.changhong.sei.core.mq;
 
+import com.changhong.sei.core.context.ContextUtil;
+import com.changhong.sei.exception.ServiceException;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaProducerException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -18,8 +22,16 @@ import java.util.UUID;
 public class MqProducer {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
-    @Value("${sei.mq.topic}")
-    private String kafkaTopic;
+
+    /**
+     * 发送队列消息
+     * @param topic MQ topic
+     * @param key 消息键值
+     * @param message 消息
+     */
+    public void send(String topic, String key, String message) {
+        kafkaTemplate.send(topic, key, message);
+    }
 
     /**
      * 发送消息
@@ -27,7 +39,11 @@ public class MqProducer {
      * @param message 消息
      */
     public void send(String key, String message) {
-        kafkaTemplate.send(kafkaTopic, key, message);
+        String topic = ContextUtil.getProperty("sei.mq.topic");
+        if (StringUtils.isBlank(topic)) {
+            throw new ServiceException("应用配置中没有消息队列的主题【sei.mq.topic】！");
+        }
+        send(topic, key, message);
     }
 
     /**
