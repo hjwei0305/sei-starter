@@ -42,8 +42,8 @@ public class ApiTemplateConfig {
     }
 
     @Bean
-    public ApiTemplate apiTemplate(RestTemplate loadBalancedRestTemplate,RestTemplate urlRestTemplate){
-        return new ApiTemplate(loadBalancedRestTemplate,urlRestTemplate);
+    public ApiTemplate apiTemplate(){
+        return new ApiTemplate(loadBalancedRestTemplate(),urlRestTemplate());
     }
 
     /**
