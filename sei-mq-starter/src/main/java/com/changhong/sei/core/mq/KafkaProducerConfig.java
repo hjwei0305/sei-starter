@@ -46,4 +46,9 @@ public class KafkaProducerConfig {
     public MqProducer mqProducer(){
         return new MqProducer();
     }
+
+    @Bean
+    public DataChangeProducerImpl dataChangeProducer() {
+        return new DataChangeProducerImpl();
+    }
 }
