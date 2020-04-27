@@ -102,17 +102,9 @@ public class ServerMockUser implements MockUser {
             ResultData resultData = template.getByAppModuleCode(AUTH_SERVICE_CODE, AUTH_SERVICE_PATH, ResultData.class, params);
             if (resultData.successful()) {
                 new ModelMapper().map(resultData.getData(), sessionUser);
-
-                if (Objects.nonNull(mockUser.getAuthorityPolicy())) {
-                    sessionUser.setAuthorityPolicy(mockUser.getAuthorityPolicy());
-                }
-                if (Objects.nonNull(mockUser.getUserType())) {
-                    sessionUser.setUserType(mockUser.getUserType());
-                }
                 if (StringUtils.isNotBlank(mockUser.getLocale())) {
                     sessionUser.setLocale(mockUser.getLocale());
                 }
-
                 // 生成token
                 ContextUtil.generateToken(sessionUser);
 
