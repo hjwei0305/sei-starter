@@ -3,14 +3,23 @@ apply plugin: 'maven'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 
-
 // java编译的时候缺省状态下会因为中文字符而失败
 [compileJava, compileTestJava, javadoc]*.options*.encoding = 'UTF-8'
 
-dependencies {
-    compile project(":sei-cloud")
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
 
-    compile("org.springframework.cloud:spring-cloud-starter-zookeeper-discovery")
+dependencies {
+    compile("com.changhong.sei:sei-core-service:$sei_version")
+
+    compile("org.springframework.boot:spring-boot-starter")
+    compile("org.springframework.cloud:spring-cloud-starter-config")
+    compile("org.springframework.cloud:spring-cloud-starter-openfeign")
+    compile("com.squareup.okhttp3:okhttp:$ok_http_version")
+    compile("org.apache.commons:commons-lang3:$commons_lang3_version")
 
     // 测试
     testCompile('org.springframework.boot:spring-boot-starter-test')
@@ -48,12 +57,6 @@ install {
         pom.version = "$project.version"
         pom.artifactId = "$project.name"
         pom.groupId = "$project.group"
-    }
-}
-
-dependencyManagement {
-    imports {
-        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
     }
 }
 

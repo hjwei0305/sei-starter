@@ -4,4 +4,7 @@ include 'sei-service-starter'
 include 'sei-mq-starter'
 include 'sei-webservice-starter'
 include 'sei-test-starter'
+include 'sei-cloud'
+include 'sei-cloud-consul-starter'
+include 'sei-cloud-zookeeper-starter'
 

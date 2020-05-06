@@ -35,19 +35,20 @@ public class ApiTemplateConfig {
     }
 
     @Bean(name = "urlRestTemplate")
-    public RestTemplate urlRestTemplate(){
+    public RestTemplate urlRestTemplate() {
         RestTemplate restTemplate = new RestTemplate(new OkHttp3ClientHttpRequestFactory());
         restTemplate.setErrorHandler(new SeiRestTemplateErrorHandle());
         return restTemplate;
     }
 
     @Bean
-    public ApiTemplate apiTemplate(){
-        return new ApiTemplate(loadBalancedRestTemplate(),urlRestTemplate());
+    public ApiTemplate apiTemplate() {
+        return new ApiTemplate(loadBalancedRestTemplate(), urlRestTemplate());
     }
 
     /**
      * 创建Feign请求拦截器，在发送请求前设置认证的token,各个微服务将token设置到环境变量中来达到通用
+     *
      * @return
      */
     @Bean
@@ -56,7 +57,7 @@ public class ApiTemplateConfig {
     }
 
     @Bean
-    public Contract feignContract(){
+    public Contract feignContract() {
         return new MultipleInheritContract();
     }
 
@@ -71,11 +72,12 @@ public class ApiTemplateConfig {
 
     /**
      * 异步执行工具类
+     *
      * @param mockUser 模拟用户
      * @return 异步执行工具类
      */
     @Bean
-    public AsyncRunUtil asyncRunUtil(MockUser mockUser){
+    public AsyncRunUtil asyncRunUtil(MockUser mockUser) {
         return new AsyncRunUtil(mockUser);
     }
 }
