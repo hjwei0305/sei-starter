@@ -12,7 +12,7 @@ dependencies {
     // consul注册中心
     compile("org.springframework.cloud:spring-cloud-starter-consul-discovery")
     // zookeeper注册中心
-    compile("org.springframework.cloud:spring-cloud-starter-consul-discovery")
+    compile("org.springframework.cloud:spring-cloud-starter-zookeeper-discovery")
 
     // 测试
     testCompile('org.springframework.boot:spring-boot-starter-test')
