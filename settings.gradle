@@ -1,10 +1,19 @@
 rootProject.name = 'sei-starter'
 
-include 'sei-service-starter'
-include 'sei-mq-starter'
-include 'sei-webservice-starter'
-include 'sei-test-starter'
+// 集成spring cloud核心逻辑
 include 'sei-cloud'
+// 整合了多个注册中心.由于不能同时注册多个注册中心,在使用时需要通过配置enable=true/false进行控制.如spring.cloud.consul.enabled=false
+include 'sei-cloud-starter'
+// 整合consul注册中心
 include 'sei-cloud-consul-starter'
+// 整合zookeeper注册中心
 include 'sei-cloud-zookeeper-starter'
+// zookeeper注册中心.由于有项目已使用暂时保留.建议改为sei-cloud-zookeeper-starter
+include 'sei-service-starter'
+// 消息队列
+include 'sei-mq-starter'
+// webservice
+include 'sei-webservice-starter'
+// 单元测试
+include 'sei-test-starter'
 
