@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
@@ -21,7 +20,6 @@ import java.util.Map;
  * @author 王锦光(wangj)
  * @version 1.0.00      2017-03-27 10:07
  */
-@Component
 public class ApiTemplate {
 
     private static final Logger log = LoggerFactory.getLogger(ApiTemplate.class);
