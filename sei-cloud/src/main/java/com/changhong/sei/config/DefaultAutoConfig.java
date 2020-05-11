@@ -168,7 +168,7 @@ public class DefaultAutoConfig {
         if (poolProperties.getMaxConnectPerRoute() <= 0) {
             throw new IllegalArgumentException("invalid maxConnectionPerRoute: " + poolProperties.getMaxConnectPerRoute());
         }
-        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(httpClient());
+        HttpComponentsClientHttpRequestFactory clientHttpRequestFactory = new HttpComponentsClientHttpRequestFactory(apacheHttpClient());
         // 连接超时
         clientHttpRequestFactory.setConnectTimeout(poolProperties.getConnectTimeout());
         // 数据读取超时时间，即SocketTimeout
@@ -182,7 +182,7 @@ public class DefaultAutoConfig {
      * 配置httpClient
      */
     @Bean
-    public HttpClient httpClient() {
+    public HttpClient apacheHttpClient() {
         HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
         try {
             //设置信任ssl访问
