@@ -10,6 +10,7 @@ import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.transaction.KafkaTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,16 +38,11 @@ public class KafkaProducerConfig {
     @Bean
     public ProducerFactory<String, String> producerFactory() {
         DefaultKafkaProducerFactory<String, String> factory = new DefaultKafkaProducerFactory<>(producerConfigs());
-//        // 启用kafka事务管理
-//        factory.transactionCapable();
-//        factory.setTransactionIdPrefix("tran-");
+        // 可以使用事务
+        factory.transactionCapable();
+        factory.setTransactionIdPrefix("kafkaTrans-");
         return factory;
     }
-
-//    @Bean
-//    public KafkaTransactionManager<String, String> transactionManager(ProducerFactory<String, String> producerFactory) {
-//        return new KafkaTransactionManager<>(producerFactory);
-//    }
 
     @Bean
     public KafkaTemplate<String, String> kafkaTemplate() {
