@@ -37,11 +37,7 @@ public class KafkaProducerConfig {
 
     @Bean
     public ProducerFactory<String, String> producerFactory() {
-        DefaultKafkaProducerFactory<String, String> factory = new DefaultKafkaProducerFactory<>(producerConfigs());
-        // 可以使用事务
-        factory.transactionCapable();
-        factory.setTransactionIdPrefix("kafkaTrans-");
-        return factory;
+        return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
     @Bean
