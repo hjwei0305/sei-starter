@@ -37,6 +37,7 @@ public class KafkaConsumerConfig {
         propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         propsMap.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "latest");
+        propsMap.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 50);
         return propsMap;
     }
 
