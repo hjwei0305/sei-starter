@@ -82,8 +82,16 @@ public class ApiTemplate {
         return postExecute(url, new HttpEntity<Object>(params, headers), responseType, false);
     }
 
+    public <T> T postByUrl(String url, ParameterizedTypeReference<T> responseType) {
+        return postExecute(url, new HttpEntity<Object>(null, getHttpHeaders()), responseType, false);
+    }
+
     public <T> T postByUrl(String url, ParameterizedTypeReference<T> responseType, Object params) {
         return postExecute(url, new HttpEntity<Object>(params, getHttpHeaders()), responseType, false);
+    }
+
+    public <T> T postByUrl(String url, Class<T> clz) {
+        return postExecute(url, new HttpEntity<Object>(null, getHttpHeaders()), clz, false);
     }
 
     public <T> T postByUrl(String url, Class<T> clz, Object params) {
