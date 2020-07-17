@@ -98,6 +98,10 @@ public class ApiTemplate {
         return this.getByUrl(url, clz, null);
     }
 
+    public <T> T getByUrl(String url, ParameterizedTypeReference<T> responseType) {
+        return this.getByUrl(url, responseType, null);
+    }
+
     public <T> T getByUrl(String url, Class<T> clz, Map<String, String> params) {
         return getExecute(url, params, clz, false);
     }
