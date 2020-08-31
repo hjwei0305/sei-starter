@@ -1,4 +1,4 @@
-package com.changhong.sei.core.mq;
+package com.changhong.sei.core.mq.config;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -14,8 +14,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <strong>实现功能:</strong>
- * <p>Kafka消费者配置</p>
+ * 实现功能:
+ * Kafka消费者配置
  *
  * @author 王锦光 wangj
  * @version 1.0.1 2017-11-01 13:01
@@ -26,7 +26,7 @@ public class KafkaConsumerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapServer;
 
-    @Value("${sei.mq.group-id}")
+    @Value("${sei.mq.group-id:spring.application.name}")
     private String groupId;
 
     private Map<String, Object> consumerConfigs() {

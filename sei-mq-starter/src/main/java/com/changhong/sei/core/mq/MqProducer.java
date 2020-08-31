@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 /**
- * <strong>实现功能:</strong>
- * <p>SEI消息队列生产者</p>
+ * 实现功能:
+ * SEI消息队列生产者
  *
  * @author 王锦光 wangj
  * @version 1.0.1 2020-01-08 13:31

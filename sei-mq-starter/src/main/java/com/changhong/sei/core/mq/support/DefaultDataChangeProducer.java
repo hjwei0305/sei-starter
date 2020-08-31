@@ -1,4 +1,4 @@
-package com.changhong.sei.core.mq;
+package com.changhong.sei.core.mq.support;
 
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.datachange.DataChangeProducer;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * @version 2020-04-22 21:17
  */
 @Component
-public class DataChangeProducerImpl implements DataChangeProducer {
+public class DefaultDataChangeProducer implements DataChangeProducer {
     @Autowired
     private KafkaTemplate<String, String> kafkaTemplate;
     // 约定的MQ Topic Key

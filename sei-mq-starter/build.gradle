@@ -10,6 +10,8 @@ dependencies {
     compile("com.changhong.sei:sei-commons:$sei_version")
     // 第三方依赖
     compile("org.springframework.kafka:spring-kafka")
+    // 日志logback-kafka-appender
+    compile("com.github.danielwegener:logback-kafka-appender:0.2.0-RC2")
 }
 
 bootJar { enabled = false }

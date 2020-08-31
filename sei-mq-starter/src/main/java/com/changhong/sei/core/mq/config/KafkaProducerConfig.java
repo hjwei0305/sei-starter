@@ -1,7 +1,10 @@
-package com.changhong.sei.core.mq;
+package com.changhong.sei.core.mq.config;
 
+import com.changhong.sei.core.datachange.DataChangeProducer;
+import com.changhong.sei.core.mq.MqProducer;
+import com.changhong.sei.core.mq.support.DefaultDataChangeProducer;
+import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.common.protocol.types.Field;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -9,15 +12,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
-import org.springframework.kafka.transaction.KafkaTransactionManager;
-import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <strong>实现功能:</strong>
- * <p>Kafka生产者配置</p>
+ * 实现功能:
+ * Kafka生产者配置
  *
  * @author 王锦光 wangj
  * @version 1.0.1 2017-11-01 12:48
@@ -45,13 +46,19 @@ public class KafkaProducerConfig {
         return new KafkaTemplate<>(producerFactory());
     }
 
+    /**
+     * SEI消息队列生产者
+     */
     @Bean
-    public MqProducer mqProducer(){
+    public MqProducer mqProducer() {
         return new MqProducer();
     }
 
+    /**
+     * 数据变更记录队列生产者
+     */
     @Bean
-    public DataChangeProducerImpl dataChangeProducer() {
-        return new DataChangeProducerImpl();
+    public DataChangeProducer dataChangeProducer() {
+        return new DefaultDataChangeProducer();
     }
 }

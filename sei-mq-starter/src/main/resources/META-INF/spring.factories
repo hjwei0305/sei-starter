@@ -1,4 +1,4 @@
 # Auto Configure
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.changhong.sei.core.mq.KafkaConsumerConfig,\
-com.changhong.sei.core.mq.KafkaProducerConfig
+com.changhong.sei.core.mq.config.KafkaConsumerConfig,\
+com.changhong.sei.core.mq.config.KafkaProducerConfig
