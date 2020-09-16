@@ -175,6 +175,12 @@ public class DefaultAutoConfig {
         clientHttpRequestFactory.setReadTimeout(poolProperties.getReadTimeout());
         // 从连接池获取请求连接的超时时间，不宜过长，必须设置，比如连接不够用时，时间过长将是灾难性的
         clientHttpRequestFactory.setConnectionRequestTimeout(poolProperties.getConnectionRequestTimout());
+        /*
+            解决使用restTemplate上传大文件Java heap space
+            该代码的意思是请求工厂类是否应用缓冲请求正文内部，默认值为true，当post或者put大文件的时候会造成内存溢出情况，
+            设置为false将数据直接流入底层HttpURLConnection
+         */
+        clientHttpRequestFactory.setBufferRequestBody(false);
         return clientHttpRequestFactory;
     }
 
