@@ -13,6 +13,7 @@ import com.changhong.sei.util.thread.ThreadLocalUtil;
 import com.google.common.collect.Maps;
 import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
+import org.slf4j.MDC;
 
 import java.util.Map;
 import java.util.Objects;
@@ -56,13 +57,8 @@ public class ServerMockUser implements MockUser {
             ResultData resultData = template.getByAppModuleCode(AUTH_SERVICE_CODE, AUTH_SERVICE_PATH, ResultData.class, params);
             if (resultData.successful()) {
                 new ModelMapper().map(resultData.getData(), sessionUser);
-                // 生成token
-                ContextUtil.generateToken(sessionUser);
 
-                ThreadLocalUtil.setLocalVar(SessionUser.class.getSimpleName(), sessionUser);
-                // 设置token到可传播的线程全局变量中
-                ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
-                return sessionUser;
+                return mock(sessionUser);
             } else {
                 throw new ServiceException("模拟用户错误: " + resultData.getMessage());
             }
@@ -105,13 +101,8 @@ public class ServerMockUser implements MockUser {
                 if (StringUtils.isNotBlank(mockUser.getLocale())) {
                     sessionUser.setLocale(mockUser.getLocale());
                 }
-                // 生成token
-                ContextUtil.generateToken(sessionUser);
 
-                ThreadLocalUtil.setLocalVar(SessionUser.class.getSimpleName(), sessionUser);
-                // 设置token到可传播的线程全局变量中
-                ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
-                return sessionUser;
+                return mock(sessionUser);
             } else {
                 throw new ServiceException("模拟用户错误: " + resultData.getMessage());
             }
