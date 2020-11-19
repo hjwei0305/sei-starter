@@ -74,8 +74,8 @@ public class DefaultAutoConfig {
      */
     @Primary
     @Bean
-    public MockUser mockUser() {
-        return new ServerMockUser();
+    public MockUser mockUser(ApiTemplate apiTemplate) {
+        return new ServerMockUser(apiTemplate);
     }
 
     /**

@@ -2,7 +2,6 @@ package com.changhong.sei.mock;
 
 import com.changhong.sei.apitemplate.ApiTemplate;
 import com.changhong.sei.core.config.properties.mock.MockUserProperties;
-import com.changhong.sei.core.context.ApplicationContextHolder;
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.context.mock.MockUser;
@@ -11,12 +10,13 @@ import com.changhong.sei.exception.SeiException;
 import com.changhong.sei.exception.ServiceException;
 import com.changhong.sei.util.thread.ThreadLocalUtil;
 import com.google.common.collect.Maps;
-import org.apache.commons.lang3.StringUtils;
 import org.modelmapper.ModelMapper;
-import org.slf4j.MDC;
+import org.springframework.retry.annotation.Backoff;
+import org.springframework.retry.annotation.Retryable;
+import org.springframework.web.client.RestClientException;
 
+import java.net.ConnectException;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * 实现功能：
@@ -25,8 +25,16 @@ import java.util.Objects;
  * @version 1.0.00  2020-02-11 17:05
  */
 public class ServerMockUser implements MockUser {
-    private static String AUTH_SERVICE_CODE = "sei-auth";
-    private static String AUTH_SERVICE_PATH = "/account/getByTenantAccount";
+    private static final String AUTH_SERVICE_CODE = "sei-auth";
+    private static final String AUTH_SERVICE_PATH = "/account/getByTenantAccount";
+
+    private static final ModelMapper MAPPER = new ModelMapper();
+
+    private final ApiTemplate apiTemplate;
+
+    public ServerMockUser(ApiTemplate apiTemplate) {
+        this.apiTemplate = apiTemplate;
+    }
 
     /**
      * 模拟用户
@@ -35,7 +43,11 @@ public class ServerMockUser implements MockUser {
      * @param account 账号
      * @return 返回模拟用户
      */
+    @SuppressWarnings("rawtypes")
     @Override
+    @Retryable(value = {RestClientException.class, ConnectException.class, IllegalStateException.class},
+            exclude = {SeiException.class},
+            maxAttempts = 5, backoff = @Backoff(delay = 2000, multiplier = 1))
     public SessionUser mockUser(String tenant, String account) {
         if (!ThreadLocalUtil.isAvailable()) {
             throw new SeiException("ThreadLocalHolder还没有初始化,请先调用ThreadLocalHolder.begin(),并在当前线程任务完成前须调用ThreadLocalHolder.end()释放资源");
@@ -44,26 +56,26 @@ public class ServerMockUser implements MockUser {
         Map<String, String> params = Maps.newHashMap();
         params.put("tenant", tenant);
         params.put("account", account);
-        try {
-            SessionUser sessionUser = new SessionUser();
-            sessionUser.setTenantCode(tenant);
-            sessionUser.setAccount(account);
-            // 生成token
-            ContextUtil.generateToken(sessionUser);
-            // 设置token到可传播的线程全局变量中
-            ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
+        SessionUser sessionUser = new SessionUser();
+        sessionUser.setTenantCode(tenant);
+        sessionUser.setAccount(account);
+        // 生成token
+        ContextUtil.generateToken(sessionUser);
+        // 设置token到可传播的线程全局变量中
+        ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
 
-            ApiTemplate template = ApplicationContextHolder.getBean(ApiTemplate.class);
-            ResultData resultData = template.getByAppModuleCode(AUTH_SERVICE_CODE, AUTH_SERVICE_PATH, ResultData.class, params);
+        ResultData resultData;
+        try {
+            resultData = apiTemplate.getByAppModuleCode(AUTH_SERVICE_CODE, AUTH_SERVICE_PATH, ResultData.class, params);
             if (resultData.successful()) {
-                new ModelMapper().map(resultData.getData(), sessionUser);
+                MAPPER.map(resultData.getData(), sessionUser);
 
                 return mock(sessionUser);
             } else {
                 throw new ServiceException("模拟用户错误: " + resultData.getMessage());
             }
-        } catch (Exception e) {
-            throw new ServiceException("模拟用户异常.", e);
+        } catch (ServiceException | IllegalStateException e) {
+            throw new RestClientException("模拟用户异常", e);
         }
     }
 
@@ -79,35 +91,8 @@ public class ServerMockUser implements MockUser {
             throw new SeiException("ThreadLocalHolder还没有初始化,请先调用ThreadLocalHolder.begin(),并在当前线程任务完成前须调用ThreadLocalHolder.end()释放资源");
         }
 
-        Map<String, String> params = Maps.newHashMap();
         String tenant = mockUser.getTenantCode();
         String account = mockUser.getAccount();
-        params.put("tenant", tenant);
-        params.put("account", account);
-        try {
-            SessionUser sessionUser = new SessionUser();
-            sessionUser.setTenantCode(tenant);
-            sessionUser.setAccount(account);
-            // 生成token
-            ContextUtil.generateToken(sessionUser);
-
-            // 设置token到可传播的线程全局变量中
-            ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
-
-            ApiTemplate template = ApplicationContextHolder.getBean(ApiTemplate.class);
-            ResultData resultData = template.getByAppModuleCode(AUTH_SERVICE_CODE, AUTH_SERVICE_PATH, ResultData.class, params);
-            if (resultData.successful()) {
-                new ModelMapper().map(resultData.getData(), sessionUser);
-                if (StringUtils.isNotBlank(mockUser.getLocale())) {
-                    sessionUser.setLocale(mockUser.getLocale());
-                }
-
-                return mock(sessionUser);
-            } else {
-                throw new ServiceException("模拟用户错误: " + resultData.getMessage());
-            }
-        } catch (Exception e) {
-            throw new ServiceException("模拟用户异常.", e);
-        }
+        return mockUser(tenant, account);
     }
 }
