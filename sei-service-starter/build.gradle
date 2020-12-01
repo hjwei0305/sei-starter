@@ -9,6 +9,7 @@ apply plugin: 'io.spring.dependency-management'
 
 dependencies {
     compile project(":sei-cloud")
+    compile project(":sei-mq-starter")
 
     compile("org.springframework.cloud:spring-cloud-starter-zookeeper-discovery")
 
