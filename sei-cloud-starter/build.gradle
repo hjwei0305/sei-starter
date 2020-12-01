@@ -8,6 +8,7 @@ apply plugin: 'io.spring.dependency-management'
 
 dependencies {
     compile project(":sei-cloud")
+    compile project(":sei-mq-starter")
     // 由于不能同时注册多个注册中心,在使用时需要通过配置enable=true/false进行控制.如spring.cloud.consul.enabled=false
     // consul注册中心
     compile("org.springframework.cloud:spring-cloud-starter-consul-discovery")
