@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class FeignBasicAuthRequestInterceptor implements RequestInterceptor {
 
-    private static final Logger log = LoggerFactory.getLogger(FeignBasicAuthRequestInterceptor.class);
+    private static final Logger LOG = LoggerFactory.getLogger(FeignBasicAuthRequestInterceptor.class);
 
     @Override
     public void apply(RequestTemplate template) {
@@ -23,8 +23,8 @@ public class FeignBasicAuthRequestInterceptor implements RequestInterceptor {
             }
         }
 
-        if(log.isDebugEnabled()){
-            log.debug("feign 默认组装header : {}",template.headers());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("feign 默认组装header : {}", template.headers());
         }
     }
 }

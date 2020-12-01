@@ -15,7 +15,7 @@ import java.util.Objects;
  * @version 1.0.1 2020-01-08 13:34
  */
 public abstract class MqConsumer {
-    private static final Logger log = LoggerFactory.getLogger(MqConsumer.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MqConsumer.class);
     /**
      * 消息的键值标识
      */
@@ -23,6 +23,7 @@ public abstract class MqConsumer {
 
     /**
      * 获取当前消息的分类键
+     *
      * @return 键值标识
      */
     protected String getKey() {
@@ -32,26 +33,28 @@ public abstract class MqConsumer {
     /**
      * 处理收到的监听消息
      *
-     * @param record     消息纪录
+     * @param record 消息纪录
      */
     @KafkaListener(topics = "${sei.mq.topic}")
     public void processMessage(ConsumerRecord<String, String> record) {
-        if (Objects.isNull(record)){
+        if (Objects.isNull(record)) {
             return;
         }
-        log.info("received key='{}' message = '{}'", record.key(), record.value());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("received key='{}' message = '{}'", record.key(), record.value());
+        }
         // 执行业务处理逻辑
         try {
             this.key = record.key();
             process(record.value());
         } catch (Exception e) {
-            e.printStackTrace();
-            log.error("MqConsumer process message error!"+e.getMessage());
+            LOG.error("MqConsumer process message error!", e);
         }
     }
 
     /**
      * 收到的监听消息后的业务处理
+     *
      * @param message 队列消息
      */
     public abstract void process(String message);

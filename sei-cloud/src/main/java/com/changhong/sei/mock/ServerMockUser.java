@@ -72,7 +72,7 @@ public class ServerMockUser implements MockUser {
 
                 return mock(sessionUser);
             } else {
-                throw new ServiceException("模拟用户错误: " + resultData.getMessage());
+                throw new ServiceException("Tenant[" + tenant + "]-Account[" + account + "]模拟用户错误: " + resultData.getMessage());
             }
         } catch (ServiceException | IllegalStateException e) {
             throw new RestClientException("模拟用户异常", e);

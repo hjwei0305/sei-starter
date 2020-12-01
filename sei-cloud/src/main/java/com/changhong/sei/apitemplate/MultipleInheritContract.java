@@ -33,11 +33,11 @@ public class MultipleInheritContract extends SpringMvcContract {
         // 判断是否为多接口继承
         List<Class<?>> targetTypes = new ArrayList<>();
         targetTypes.add(targetType);
-        if (targetType.getInterfaces().length > 1){
+        if (targetType.getInterfaces().length > 1) {
             targetTypes.addAll(Arrays.asList(targetType.getInterfaces()));
         }
-        Map<String, MethodMetadata> result = new LinkedHashMap<String, MethodMetadata>();
-        for (Class<?> parseTargetType: targetTypes){
+        Map<String, MethodMetadata> result = new LinkedHashMap<>();
+        for (Class<?> parseTargetType : targetTypes) {
             for (Method method : parseTargetType.getMethods()) {
                 if (method.getDeclaringClass() == Object.class ||
                         (method.getModifiers() & Modifier.STATIC) != 0 ||

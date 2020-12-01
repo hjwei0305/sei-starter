@@ -15,18 +15,18 @@ import org.springframework.context.annotation.Configuration;
 import javax.jws.WebService;
 
 /**
- * @Author: 刘松林
- * @Contact: songlin.liu@changhong.com
- * @Date: 2020/3/24 12:23
- * @Description: web-service 发布配置
+ * Author: 刘松林 songlin.liu@changhong.com
+ * Date: 2020/3/24 12:23
+ * Description: web-service 发布配置
  */
 @Configuration
-@ConditionalOnProperty(value = "sei.webservice.enable",havingValue = "true", matchIfMissing = true)
-public class WebServiceConfig implements InitializingBean{
+@ConditionalOnProperty(value = "sei.webservice.enable", havingValue = "true", matchIfMissing = true)
+public class WebServiceConfig implements InitializingBean {
 
     @Autowired
     private ApplicationContext context;
 
+    @SuppressWarnings("rawtypes")
     @Bean
     public ServletRegistrationBean cxfServlet() {
         ServletRegistrationBean<CXFServlet> registration = new ServletRegistrationBean<>(new CXFServlet());
@@ -34,13 +34,14 @@ public class WebServiceConfig implements InitializingBean{
         registration.addUrlMappings("/webservice/*");
         return registration;
     }
+
     @Bean(name = Bus.DEFAULT_BUS_ID)
     public SpringBus springBus() {
         return new SpringBus();
     }
 
     @Override
-    public void afterPropertiesSet(){
+    public void afterPropertiesSet() {
         EndpointImpl endpoint;
         WebService webService;
         SpringBus bus = springBus();

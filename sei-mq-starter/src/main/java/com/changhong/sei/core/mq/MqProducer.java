@@ -2,6 +2,7 @@ package com.changhong.sei.core.mq;
 
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.exception.ServiceException;
+import com.changhong.sei.util.IdGenerator;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +52,7 @@ public class MqProducer {
      * @param message 消息
      */
     public void send(String message) {
-        String key = UUID.randomUUID().toString();
+        String key = IdGenerator.uuid();
         send(key, message);
     }
 }

@@ -22,7 +22,7 @@ import java.util.Map;
  */
 public class ApiTemplate {
 
-    private static final Logger log = LoggerFactory.getLogger(ApiTemplate.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ApiTemplate.class);
 
     private final RestTemplate loadBalancedRestTemplate;
 
@@ -61,41 +61,41 @@ public class ApiTemplate {
 
     public <T> T postByAppModuleCode(String appModuleCode, String path, Class<T> clz, Object params) {
         String url = getAppModuleUrl(appModuleCode, path);
-        return postExecute(url, new HttpEntity<Object>(params, getHttpHeaders()), clz, true);
+        return postExecute(url, new HttpEntity<>(params, getHttpHeaders()), clz, true);
     }
 
     public <T> T postByAppModuleCode(String appModuleCode, String path, ParameterizedTypeReference<T> responseType, Object params) {
         String url = getAppModuleUrl(appModuleCode, path);
-        return postExecute(url, new HttpEntity<Object>(params, getHttpHeaders()), responseType, true);
+        return postExecute(url, new HttpEntity<>(params, getHttpHeaders()), responseType, true);
     }
 
     public <T> T uploadFileByAppModuleCode(String appModuleCode, String path, ParameterizedTypeReference<T> responseType, Object params) {
         String url = getAppModuleUrl(appModuleCode, path);
         HttpHeaders headers = getHttpHeaders();
         headers.setContentType(MediaType.parseMediaType("multipart/form-data; charset=UTF-8"));
-        return postExecute(url, new HttpEntity<Object>(params, headers), responseType, true);
+        return postExecute(url, new HttpEntity<>(params, headers), responseType, true);
     }
 
     public <T> T uploadFileByUrl(String url, ParameterizedTypeReference<T> responseType, Object params) {
         HttpHeaders headers = getHttpHeaders();
         headers.setContentType(MediaType.parseMediaType("multipart/form-data; charset=UTF-8"));
-        return postExecute(url, new HttpEntity<Object>(params, headers), responseType, false);
+        return postExecute(url, new HttpEntity<>(params, headers), responseType, false);
     }
 
     public <T> T postByUrl(String url, ParameterizedTypeReference<T> responseType) {
-        return postExecute(url, new HttpEntity<Object>(null, getHttpHeaders()), responseType, false);
+        return postExecute(url, new HttpEntity<>(null, getHttpHeaders()), responseType, false);
     }
 
     public <T> T postByUrl(String url, ParameterizedTypeReference<T> responseType, Object params) {
-        return postExecute(url, new HttpEntity<Object>(params, getHttpHeaders()), responseType, false);
+        return postExecute(url, new HttpEntity<>(params, getHttpHeaders()), responseType, false);
     }
 
     public <T> T postByUrl(String url, Class<T> clz) {
-        return postExecute(url, new HttpEntity<Object>(null, getHttpHeaders()), clz, false);
+        return postExecute(url, new HttpEntity<>(null, getHttpHeaders()), clz, false);
     }
 
     public <T> T postByUrl(String url, Class<T> clz, Object params) {
-        return postExecute(url, new HttpEntity<Object>(params, getHttpHeaders()), clz, false);
+        return postExecute(url, new HttpEntity<>(params, getHttpHeaders()), clz, false);
     }
 
     public void deleteByAppModuleCode(String appModuleCode, String path, String id) {
@@ -130,35 +130,41 @@ public class ApiTemplate {
 
     private <T> T postExecute(String url, HttpEntity<Object> requestEntity, ParameterizedTypeReference<T> responseType, boolean isBalanced) {
 //        log.info("ApiTemplate post 请求，url:{},params:{}", url, JsonUtils.toJson(requestEntity.getBody()));
-        ResponseEntity<T> result = null;
+        ResponseEntity<T> result;
         if (isBalanced) {
             result = loadBalancedRestTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType);
         } else {
             result = urlRestTemplate.exchange(url, HttpMethod.POST, requestEntity, responseType);
         }
-        log.info("ApiTemplate post 请求完成，httpStatus:{}", result.getStatusCode());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("ApiTemplate post 请求完成，httpStatus:{}", result.getStatusCode());
+        }
         return result.getBody();
     }
 
     private <T> T postExecute(String url, HttpEntity<Object> requestEntity, Class<T> clz, boolean isBalanced) {
 //        log.info("ApiTemplate post 请求，url:{},params:{}", url, JsonUtils.toJson(requestEntity.getBody()));
-        ResponseEntity<T> result = null;
+        ResponseEntity<T> result;
         if (isBalanced) {
             result = loadBalancedRestTemplate.exchange(url, HttpMethod.POST, requestEntity, clz);
         } else {
             result = urlRestTemplate.exchange(url, HttpMethod.POST, requestEntity, clz);
         }
-        log.info("ApiTemplate post 请求完成，httpStatus:{}", result.getStatusCode());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("ApiTemplate post 请求完成，httpStatus:{}", result.getStatusCode());
+        }
         return result.getBody();
     }
 
     private <T> T getExecute(String url, Map<String, String> params, Class<T> clz, boolean isBalanced) {
-        log.info("ApiTemplate get 请求，url:{},params:{}", url, JsonUtils.toJson(params));
-        ResponseEntity<T> result = null;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("ApiTemplate get 请求，url:{},params:{}", url, JsonUtils.toJson(params));
+        }
+        ResponseEntity<T> result;
         HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(null, getHttpHeaders());
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         if (!CollectionUtils.isEmpty(params)) {
-            params.forEach((k, v) -> builder.queryParam(k, v));
+            params.forEach(builder::queryParam);
         }
         url = builder.build().encode().toString();
         if (isBalanced) {
@@ -175,17 +181,21 @@ public class ApiTemplate {
                 result = urlRestTemplate.exchange(url, HttpMethod.GET, httpEntity, clz, params);
             }
         }
-        log.info("ApiTemplate post 请求完成，httpStatus:{}", result.getStatusCode());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("ApiTemplate post 请求完成，httpStatus:{}", result.getStatusCode());
+        }
         return result.getBody();
     }
 
     private <T> T getExecute(String url, Map<String, String> params, ParameterizedTypeReference<T> responseType, boolean isBalanced) {
-        log.info("ApiTemplate get 请求，url:{},params:{}", url, JsonUtils.toJson(params));
-        ResponseEntity<T> result = null;
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("ApiTemplate get 请求，url:{},params:{}", url, JsonUtils.toJson(params));
+        }
+        ResponseEntity<T> result;
         HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(null, getHttpHeaders());
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
         if (!CollectionUtils.isEmpty(params)) {
-            params.forEach((k, v) -> builder.queryParam(k, v));
+            params.forEach(builder::queryParam);
         }
         url = builder.build().encode().toString();
         if (isBalanced) {
@@ -202,7 +212,9 @@ public class ApiTemplate {
                 result = urlRestTemplate.exchange(url, HttpMethod.GET, httpEntity, responseType, params);
             }
         }
-        log.info("ApiTemplate post 请求完成，httpStatus:{}", result.getStatusCode());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("ApiTemplate post 请求完成，httpStatus:{}", result.getStatusCode());
+        }
         return result.getBody();
     }
 
@@ -215,8 +227,8 @@ public class ApiTemplate {
         if (!headerMap.isEmpty()) {
             headers.setAll(headerMap);
         }
-        if (log.isDebugEnabled()) {
-            log.debug("默认header组装完成，header:{}", headers.toString());
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("默认header组装完成，header:{}", headers.toString());
         }
         return headers;
     }

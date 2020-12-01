@@ -140,11 +140,11 @@ public class DefaultAutoConfig {
 //        return createRestTemplate(factory);
 //    }
 
-    /**
-     * 初始化支持异步的RestTemplate,并加入spring的Bean工厂，由spring统一管理,如果你用不到异步，则无须创建该对象
-     * 这个类过时了
-     * @return
-     */
+//    /**
+//     * 初始化支持异步的RestTemplate,并加入spring的Bean工厂，由spring统一管理,如果你用不到异步，则无须创建该对象
+//     * 这个类过时了
+//     * @return
+//     */
 /*  @Bean(name = "asyncRestTemplate")
   @ConditionalOnMissingBean(AsyncRestTemplate.class)
   public AsyncRestTemplate asyncRestTemplate(RestTemplate restTemplate) {
@@ -235,7 +235,9 @@ public class DefaultAutoConfig {
                     response.headerIterator(HTTP.CONN_KEEP_ALIVE));
             while (it.hasNext()) {
                 HeaderElement he = it.nextElement();
-                LOG.info("HeaderElement:{}", JsonUtils.toJson(he));
+                if (LOG.isDebugEnabled()) {
+                    LOG.debug("HeaderElement:{}", JsonUtils.toJson(he));
+                }
                 String param = he.getName();
                 String value = he.getValue();
                 if (value != null && "timeout".equalsIgnoreCase(param)) {
