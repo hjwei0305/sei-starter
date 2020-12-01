@@ -13,6 +13,8 @@ dependencyManagement {
 }
 
 dependencies {
+    compile project(":sei-mq-starter")
+
     compile("com.changhong.sei:sei-core-service:$sei_version")
 
     compile("org.springframework.boot:spring-boot-starter")
