@@ -34,6 +34,10 @@ subprojects  {
         maven { url REPOSITORY }
         //mavenCentral()
     }
+
+//    configurations {
+//        all*.exclude group: "org.junit.vintage", module: "junit-vintage-engine"
+//    }
 }
 
 
