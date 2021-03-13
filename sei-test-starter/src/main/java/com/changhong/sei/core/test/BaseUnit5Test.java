@@ -40,7 +40,7 @@ public class BaseUnit5Test {
     @BeforeEach
     @DisplayName("单元测试模拟用户")
     public void mock() {
-        LOG.debug("当前模拟用户: {}", mockUser.mockUser(properties));
+        LOG.info("当前模拟用户: {}", mockUser.mockUser(properties));
     }
 
 
@@ -49,6 +49,6 @@ public class BaseUnit5Test {
     public static void cleanup() {
         // 释放
         ThreadLocalHolder.end();
-        LOG.debug("单元测试资源释放.......");
+        LOG.info("单元测试资源释放.......");
     }
 }
