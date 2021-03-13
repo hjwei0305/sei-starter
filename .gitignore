@@ -8,6 +8,7 @@ target/
 .settings
 .springBeans
 .gradle/
+gradle
 gradlew
 gradlew.bat
 
