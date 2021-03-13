@@ -1,7 +1,9 @@
 package com.changhong.sei.core.test;
 
 import com.changhong.sei.core.config.properties.mock.MockUserProperties;
+import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.context.mock.MockUser;
+import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.util.thread.ThreadLocalHolder;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -23,7 +25,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class BaseUnit5Test {
-    protected static final Logger LOG = LoggerFactory.getLogger(BaseUnit5Test.class);
     @Autowired
     public MockUserProperties properties;
     @Autowired
@@ -34,13 +35,14 @@ public class BaseUnit5Test {
     public static void setup() {
         // 初始化
         ThreadLocalHolder.begin();
-        LOG.debug("开始进入单元测试.......");
+        System.out.println("开始进入单元测试.......");
     }
 
     @BeforeEach
     @DisplayName("单元测试模拟用户")
     public void mock() {
-        LOG.info("当前模拟用户: {}", mockUser.mockUser(properties));
+        SessionUser sessionUser = mockUser.mockUser(properties);
+        System.out.println("当前模拟用户: " + sessionUser.toString());
     }
 
 
@@ -49,6 +51,6 @@ public class BaseUnit5Test {
     public static void cleanup() {
         // 释放
         ThreadLocalHolder.end();
-        LOG.info("单元测试资源释放.......");
+        System.out.println("单元测试资源释放.......");
     }
 }
