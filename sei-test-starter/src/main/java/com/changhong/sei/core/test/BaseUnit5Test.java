@@ -3,12 +3,9 @@ package com.changhong.sei.core.test;
 import com.changhong.sei.core.config.properties.mock.MockUserProperties;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.context.mock.MockUser;
-import com.changhong.sei.core.log.LogUtil;
 import com.changhong.sei.util.thread.ThreadLocalHolder;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import org.apache.commons.lang3.time.StopWatch;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,10 +22,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class BaseUnit5Test {
+    protected static final Logger LOG = LoggerFactory.getLogger(BaseUnitTest.class);
+
     @Autowired
     public MockUserProperties properties;
     @Autowired
     public MockUser mockUser;
+    public static StopWatch stopWatch;
 
     @BeforeAll
     @DisplayName("单元测试初始化")
@@ -43,8 +43,15 @@ public class BaseUnit5Test {
     public void mock() {
         SessionUser sessionUser = mockUser.mockUser(properties);
         System.out.println("当前模拟用户: " + sessionUser.toString());
+        stopWatch = StopWatch.createStarted();
     }
 
+    @AfterEach
+    @DisplayName("单元测试耗时统计")
+    public void after() {
+        stopWatch.stop();
+        System.out.println("耗时(ms): " + stopWatch.getTime());
+    }
 
     @AfterAll
     @DisplayName("单元测试完成资源释放")

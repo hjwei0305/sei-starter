@@ -3,6 +3,8 @@ package com.changhong.sei.core.test;
 import com.changhong.sei.core.config.properties.mock.MockUserProperties;
 import com.changhong.sei.core.context.mock.MockUser;
 import com.changhong.sei.util.thread.ThreadLocalHolder;
+import org.apache.commons.lang3.time.StopWatch;
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -27,19 +29,27 @@ public class BaseUnitTest {
     public MockUserProperties properties;
     @Autowired
     public MockUser mockUser;
+    public static StopWatch stopWatch;
 
     @BeforeClass
     public static void setup() {
         // 初始化
         ThreadLocalHolder.begin();
 
-        LOG.debug("开始进入单元测试.......");
+        System.out.println("开始进入单元测试.......");
     }
 
     @Before
     public void mock() {
 //        LOG.debug("当前模拟用户: {}", mockUser.mockUser(properties.getTenantCode(), properties.getAccount()));
-        LOG.debug("当前模拟用户: {}", mockUser.mockUser(properties));
+        System.out.println("当前模拟用户: " + mockUser.mockUser(properties));
+        stopWatch = StopWatch.createStarted();
+    }
+
+    @After
+    public void after() {
+        stopWatch.stop();
+        System.out.println("耗时(ms): " + stopWatch.getTime());
     }
 
 
@@ -47,7 +57,7 @@ public class BaseUnitTest {
     public static void cleanup() {
         // 释放
         ThreadLocalHolder.end();
-        LOG.debug("单元测试资源释放.......");
+        System.out.println("单元测试资源释放.......");
     }
 
 }
