@@ -4,6 +4,7 @@ import com.changhong.sei.core.config.properties.AccessLogProperties;
 import com.changhong.sei.core.log.interceptor.AccessLogHandlerInterceptor;
 import com.changhong.sei.core.log.producer.AccessLogProducer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,8 +20,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  */
 @Configuration
 @ConditionalOnBean(KafkaTemplate.class)
+@ConditionalOnProperty(value = "sei.log.access.enable", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties({AccessLogProperties.class})
-public class DefaultMonitorAutoConfig implements WebMvcConfigurer {
+public class DefaultAccessLogAutoConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {

@@ -9,6 +9,13 @@
   ],
   "properties": [
     {
+      "name": "sei.log.access.enable",
+      "type": "java.lang.Boolean",
+      "description": "启用访问日志记录",
+      "sourceType": "com.changhong.sei.core.config.properties.AccessLogProperties",
+      "defaultValue": true
+    },
+    {
       "name": "sei.log.access.all",
       "type": "java.lang.Boolean",
       "description": "记录所有访问",
