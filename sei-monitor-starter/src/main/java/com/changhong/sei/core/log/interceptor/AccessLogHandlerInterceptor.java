@@ -1,14 +1,16 @@
-package com.changhong.sei.core.monitor.interceptor;
+package com.changhong.sei.core.log.interceptor;
 
 import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
-import com.changhong.sei.core.monitor.producer.AccessLogProducer;
-import com.changhong.sei.core.monitor.vo.AccessLogVo;
+import com.changhong.sei.core.log.annotation.AccessLog;
+import com.changhong.sei.core.log.producer.AccessLogProducer;
+import com.changhong.sei.core.log.vo.AccessLogVo;
 import com.changhong.sei.core.util.HttpUtils;
 import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -31,6 +33,11 @@ public class AccessLogHandlerInterceptor implements HandlerInterceptor {
 
     @Autowired(required = false)
     private AccessLogProducer producer;
+    /**
+     * 是否记录所有访问
+     */
+    @Value("${sei.log.access.all:true}")
+    private boolean recordAll;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -49,18 +56,32 @@ public class AccessLogHandlerInterceptor implements HandlerInterceptor {
             long sTime = (Long) request.getAttribute(LOGGER_START_TIME);
             // 持续时间
             long duration = System.currentTimeMillis() - sTime;
-            SessionUser sessionUser = ContextUtil.getSessionUser();
-
             try {
                 HandlerMethod handlerMethod = (HandlerMethod) handler;
 
-                String featureCode = handlerMethod.getMethod().getName().toUpperCase();
+                boolean isRecord = recordAll;
+                AccessLog accessLog = handlerMethod.getMethodAnnotation(AccessLog.class);
+                if (Objects.nonNull(accessLog)) {
+                    isRecord = AccessLog.FilterReply.ACCEPT == accessLog.value();
+                } else {
+                    accessLog = handlerMethod.getBeanType().getAnnotation(AccessLog.class);
+                    if (Objects.nonNull(accessLog)) {
+                        isRecord = AccessLog.FilterReply.ACCEPT == accessLog.value();
+                    }
+                }
+                if (!isRecord) {
+                    return;
+                }
+
                 String feature = "";
+                String featureCode = handlerMethod.getMethod().getName().toUpperCase();
                 ApiOperation apiOperation = handlerMethod.getMethodAnnotation(ApiOperation.class);
                 if (Objects.nonNull(apiOperation)) {
                     feature = apiOperation.value();
                 }
+
                 AccessLogVo log = new AccessLogVo();
+                SessionUser sessionUser = ContextUtil.getSessionUser();
                 log.setTenantCode(sessionUser.getTenantCode());
                 log.setUserId(sessionUser.getUserId());
                 log.setUserAccount(sessionUser.getAccount());
@@ -70,7 +91,7 @@ public class AccessLogHandlerInterceptor implements HandlerInterceptor {
                 log.setFeature(feature);
                 log.setTraceId(ContextUtil.getTraceId());
                 log.setPath(request.getServletPath());
-                log.setUrl(request.getRequestURI());
+                log.setUrl(request.getRequestURL().toString());
                 log.setMethod(request.getMethod());
                 log.setDuration(duration);
                 log.setIp(HttpUtils.getClientIP(request));

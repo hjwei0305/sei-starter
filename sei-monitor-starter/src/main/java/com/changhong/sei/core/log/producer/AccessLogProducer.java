@@ -1,10 +1,12 @@
-package com.changhong.sei.core.monitor.producer;
+package com.changhong.sei.core.log.producer;
 
-import com.changhong.sei.core.monitor.vo.AccessLogVo;
+import com.changhong.sei.core.log.vo.AccessLogVo;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.util.IdGenerator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
+
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 实现功能: 访问日志队列生产者
@@ -28,8 +30,10 @@ public class AccessLogProducer {
      *
      * @param log 日志消息
      */
-    public void send(AccessLogVo log) {
-        String message = JsonUtils.toJson(log);
-        kafkaTemplate.send(topic, IdGenerator.uuid(), message);
+    public void send(final AccessLogVo log) {
+        CompletableFuture.runAsync(() -> {
+            String message = JsonUtils.toJson(log);
+            kafkaTemplate.send(topic, IdGenerator.uuid(), message);
+        });
     }
 }

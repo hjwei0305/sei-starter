@@ -1,4 +1,4 @@
-package com.changhong.sei.core.monitor.vo;
+package com.changhong.sei.core.log.vo;
 
 import java.io.Serializable;
 import java.util.Objects;
