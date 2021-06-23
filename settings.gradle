@@ -16,4 +16,6 @@ include 'sei-mq-starter'
 include 'sei-webservice-starter'
 // 单元测试
 include 'sei-test-starter'
+// 监控服务
+include 'sei-monitor-starter'
 
