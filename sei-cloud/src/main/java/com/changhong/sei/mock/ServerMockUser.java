@@ -6,11 +6,13 @@ import com.changhong.sei.core.context.ContextUtil;
 import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.context.mock.MockUser;
 import com.changhong.sei.core.dto.ResultData;
+import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.exception.SeiException;
 import com.changhong.sei.exception.ServiceException;
 import com.changhong.sei.util.thread.ThreadLocalUtil;
 import com.google.common.collect.Maps;
-import org.modelmapper.ModelMapper;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.client.RestClientException;
@@ -27,8 +29,6 @@ import java.util.Map;
 public class ServerMockUser implements MockUser {
     private static final String AUTH_SERVICE_CODE = "sei-auth";
     private static final String AUTH_SERVICE_PATH = "/account/getByTenantAccount";
-
-    private static final ModelMapper MAPPER = new ModelMapper();
 
     private final ApiTemplate apiTemplate;
 
@@ -49,34 +49,10 @@ public class ServerMockUser implements MockUser {
             exclude = {SeiException.class},
             maxAttempts = 5, backoff = @Backoff(delay = 2000, multiplier = 1))
     public SessionUser mockUser(String tenant, String account) {
-        if (!ThreadLocalUtil.isAvailable()) {
-            throw new SeiException("ThreadLocalHolder还没有初始化,请先调用ThreadLocalHolder.begin(),并在当前线程任务完成前须调用ThreadLocalHolder.end()释放资源");
-        }
-
-        Map<String, String> params = Maps.newHashMap();
-        params.put("tenant", tenant);
-        params.put("account", account);
-        SessionUser sessionUser = new SessionUser();
-        sessionUser.setTenantCode(tenant);
-        sessionUser.setAccount(account);
-        // 生成token
-        ContextUtil.generateToken(sessionUser);
-        // 设置token到可传播的线程全局变量中
-        ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
-
-        ResultData resultData;
-        try {
-            resultData = apiTemplate.getByAppModuleCode(AUTH_SERVICE_CODE, AUTH_SERVICE_PATH, ResultData.class, params);
-            if (resultData.successful()) {
-                MAPPER.map(resultData.getData(), sessionUser);
-
-                return mock(sessionUser);
-            } else {
-                throw new ServiceException("Tenant[" + tenant + "]-Account[" + account + "]模拟用户错误: " + resultData.getMessage());
-            }
-        } catch (ServiceException | IllegalStateException e) {
-            throw new RestClientException("模拟用户异常", e);
-        }
+        MockUserProperties mockUser = new MockUserProperties();
+        mockUser.setTenantCode(tenant);
+        mockUser.setAccount(account);
+        return mockUser(mockUser);
     }
 
     /**
@@ -93,6 +69,42 @@ public class ServerMockUser implements MockUser {
 
         String tenant = mockUser.getTenantCode();
         String account = mockUser.getAccount();
-        return mockUser(tenant, account);
+
+        Map<String, String> params = Maps.newHashMap();
+        params.put("tenant", tenant);
+        params.put("account", account);
+        try {
+            SessionUser sessionUser = new SessionUser();
+            BeanUtils.copyProperties(sessionUser, mockUser);
+
+            // 生成token
+            ContextUtil.generateToken(sessionUser);
+            // 设置token到可传播的线程全局变量中
+            ThreadLocalUtil.setTranVar(ContextUtil.HEADER_TOKEN_KEY, sessionUser.getToken());
+
+            ResultData<?> resultData = apiTemplate.getByAppModuleCode(AUTH_SERVICE_CODE, AUTH_SERVICE_PATH, ResultData.class, params);
+            if (resultData.successful()) {
+                SessionUser user = JsonUtils.node2Object(JsonUtils.object2Node(resultData.getData()), SessionUser.class);
+                if (StringUtils.equals(SessionUser.ANONYMOUS, sessionUser.getUserId())) {
+                    sessionUser.setUserId(user.getUserId());
+                }
+                if (StringUtils.equals(SessionUser.ANONYMOUS, sessionUser.getLoginAccount())) {
+                    sessionUser.setLoginAccount(user.getLoginAccount());
+                }
+                if (StringUtils.equals(SessionUser.ANONYMOUS, sessionUser.getUserName())) {
+                    sessionUser.setUserName(user.getUserName());
+                }
+                if (StringUtils.equals(SessionUser.UNKNOWN, sessionUser.getIp())) {
+                    sessionUser.setIp(user.getIp());
+                }
+                sessionUser.setUserType(user.getUserType());
+                sessionUser.setAuthorityPolicy(user.getAuthorityPolicy());
+                return mock(sessionUser);
+            } else {
+                throw new ServiceException("Tenant[" + tenant + "]-Account[" + account + "]模拟用户错误: " + resultData.getMessage());
+            }
+        } catch (Exception e) {
+            throw new RestClientException("模拟用户异常", e);
+        }
     }
 }
