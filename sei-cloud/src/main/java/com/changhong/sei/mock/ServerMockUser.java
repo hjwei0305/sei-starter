@@ -13,8 +13,8 @@ import com.changhong.sei.util.thread.ThreadLocalUtil;
 import com.google.common.collect.Maps;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
+//import org.springframework.retry.annotation.Backoff;
+//import org.springframework.retry.annotation.Retryable;
 import org.springframework.web.client.RestClientException;
 
 import java.net.ConnectException;
@@ -45,9 +45,9 @@ public class ServerMockUser implements MockUser {
      */
     @SuppressWarnings("rawtypes")
     @Override
-    @Retryable(value = {RestClientException.class, ConnectException.class, IllegalStateException.class},
-            exclude = {SeiException.class},
-            maxAttempts = 5, backoff = @Backoff(delay = 2000, multiplier = 1))
+//    @Retryable(value = {RestClientException.class, ConnectException.class, IllegalStateException.class},
+//            exclude = {SeiException.class},
+//            maxAttempts = 5, backoff = @Backoff(delay = 2000, multiplier = 1))
     public SessionUser mockUser(String tenant, String account) {
         MockUserProperties mockUser = new MockUserProperties();
         mockUser.setTenantCode(tenant);

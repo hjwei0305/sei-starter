@@ -12,6 +12,8 @@ dependencies {
     compile project(":sei-mq-starter")
     compile project(":sei-monitor-starter")
 
+    compile("com.changhong.sei:sei-core-service:$sei_version")
+
     compile("org.springframework.cloud:spring-cloud-starter-zookeeper-discovery")
 
     // 测试

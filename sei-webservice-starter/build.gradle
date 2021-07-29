@@ -10,7 +10,6 @@ dependencies {
     compile("org.apache.cxf:cxf-rt-transports-http:3.3.5")
 }
 
-
 bootJar { enabled = false }
 jar {
     manifest {
