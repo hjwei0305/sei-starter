@@ -10,7 +10,6 @@ import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.exception.SeiException;
 import com.changhong.sei.exception.ServiceException;
 import com.changhong.sei.util.thread.ThreadLocalUtil;
-import com.google.common.collect.Maps;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.StringUtils;
 //import org.springframework.retry.annotation.Backoff;
@@ -18,6 +17,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.client.RestClientException;
 
 import java.net.ConnectException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -70,7 +70,7 @@ public class ServerMockUser implements MockUser {
         String tenant = mockUser.getTenantCode();
         String account = mockUser.getAccount();
 
-        Map<String, String> params = Maps.newHashMap();
+        Map<String, String> params = new HashMap<>(7);
         params.put("tenant", tenant);
         params.put("account", account);
         try {

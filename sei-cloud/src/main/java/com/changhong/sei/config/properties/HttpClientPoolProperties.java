@@ -22,9 +22,9 @@ public class HttpClientPoolProperties {
      */
     private int maxConnectPerRoute = 200;
     /**
-     * 客户端和服务器建立连接超时，默认2s
+     * 客户端和服务器建立连接超时，默认3s
      */
-    private int connectTimeout = 2 * 1000;
+    private int connectTimeout = 3 * 1000;
     /**
      * 指客户端从服务器读取数据包的间隔超时时间,不是总读取时间，默认30s
      */

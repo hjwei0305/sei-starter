@@ -5,6 +5,7 @@ import com.changhong.sei.apitemplate.FeignBasicAuthRequestInterceptor;
 import com.changhong.sei.apitemplate.MultipleInheritContract;
 import com.changhong.sei.apitemplate.SeiRestTemplateErrorHandle;
 import com.changhong.sei.config.properties.HttpClientPoolProperties;
+import com.changhong.sei.core.context.PlatformVersion;
 import com.changhong.sei.core.context.mock.MockUser;
 import com.changhong.sei.core.util.JsonUtils;
 import com.changhong.sei.mock.ServerMockUser;
@@ -66,8 +67,24 @@ import java.util.*;
 @EnableConfigurationProperties({HttpClientPoolProperties.class})
 public class DefaultAutoConfig {
     private static final Logger LOG = LoggerFactory.getLogger(DefaultAutoConfig.class);
+    /**
+     * 默认请求头
+     */
+    private static final List<Header> DEFAULT_HEADERS;
     @Autowired
     private HttpClientPoolProperties poolProperties;
+
+    /*
+     * 设置默认请求头
+     */
+    static {
+        PlatformVersion platformVersion = new PlatformVersion();
+        DEFAULT_HEADERS = new ArrayList<>();
+        DEFAULT_HEADERS.add(new BasicHeader("User-Agent", "SEI-RestTemplate/" + platformVersion.getCurrentVersion()));
+        DEFAULT_HEADERS.add(new BasicHeader("Accept-Encoding", "gzip,deflate"));
+        DEFAULT_HEADERS.add(new BasicHeader("Accept-Language", "zh-CN"));
+        DEFAULT_HEADERS.add(new BasicHeader("Connection", "Keep-Alive"));
+    }
 
     /**
      * 服务的模拟用户
@@ -114,45 +131,10 @@ public class DefaultAutoConfig {
         return createRestTemplate(requestFactory);
     }
 
-//    private OkHttp3ClientHttpRequestFactory createRequestFactory() {
-//        OkHttp3ClientHttpRequestFactory factory = new OkHttp3ClientHttpRequestFactory();
-//        // 3分钟超时
-//        factory.setConnectTimeout(180000);
-//        factory.setReadTimeout(180000);
-//        return factory;
-//    }
-
     @Bean
     public ApiTemplate apiTemplate(ClientHttpRequestFactory requestFactory) {
         return new ApiTemplate(loadBalancedRestTemplate(requestFactory), urlRestTemplate(requestFactory));
     }
-
-//    @Bean
-//    public RestTemplate restTemplate() {
-//        return new RestTemplate();
-//    }
-
-//    /**
-//     * 初始化RestTemplate,并加入spring的Bean工厂，由spring统一管理
-//     */
-//    @Bean(name = "httpClientTemplate")
-//    public RestTemplate restTemplate(ClientHttpRequestFactory factory) {
-//        return createRestTemplate(factory);
-//    }
-
-//    /**
-//     * 初始化支持异步的RestTemplate,并加入spring的Bean工厂，由spring统一管理,如果你用不到异步，则无须创建该对象
-//     * 这个类过时了
-//     * @return
-//     */
-/*  @Bean(name = "asyncRestTemplate")
-  @ConditionalOnMissingBean(AsyncRestTemplate.class)
-  public AsyncRestTemplate asyncRestTemplate(RestTemplate restTemplate) {
-    final Netty4ClientHttpRequestFactory factory = new Netty4ClientHttpRequestFactory();
-    factory.setConnectTimeout(this.connectionTimeout);
-    factory.setReadTimeout(this.readTimeout);
-    return new AsyncRestTemplate(factory, restTemplate);
-  }*/
 
     /**
      * 创建HTTP客户端工厂
@@ -214,7 +196,7 @@ public class DefaultAutoConfig {
             httpClientBuilder.setRetryHandler(new DefaultHttpRequestRetryHandler(poolProperties.getRetryTimes(), true));
 
             //设置默认请求头
-            List<Header> headers = getDefaultHeaders();
+            List<Header> headers = new ArrayList<>(DEFAULT_HEADERS);
             httpClientBuilder.setDefaultHeaders(headers);
             //设置长连接保持策略
             httpClientBuilder.setKeepAliveStrategy(connectionKeepAliveStrategy());
@@ -231,8 +213,7 @@ public class DefaultAutoConfig {
     public ConnectionKeepAliveStrategy connectionKeepAliveStrategy() {
         return (response, context) -> {
             // Honor 'keep-alive' header
-            HeaderElementIterator it = new BasicHeaderElementIterator(
-                    response.headerIterator(HTTP.CONN_KEEP_ALIVE));
+            HeaderElementIterator it = new BasicHeaderElementIterator(response.headerIterator(HTTP.CONN_KEEP_ALIVE));
             while (it.hasNext()) {
                 HeaderElement he = it.nextElement();
                 if (LOG.isDebugEnabled()) {
@@ -252,25 +233,10 @@ public class DefaultAutoConfig {
                     HttpClientContext.HTTP_TARGET_HOST);
             //如果请求目标地址,单独配置了长连接保持时间,使用该配置
             Optional<Map.Entry<String, Integer>> any = Optional.ofNullable(poolProperties.getKeepAliveTargetHost()).orElseGet(HashMap::new)
-                    .entrySet().stream().filter(
-                            e -> e.getKey().equalsIgnoreCase(target.getHostName())).findAny();
+                    .entrySet().stream().filter(e -> e.getKey().equalsIgnoreCase(target.getHostName())).findAny();
             //否则使用默认长连接保持时间
             return any.map(en -> en.getValue() * 1000L).orElse(poolProperties.getKeepAliveTime() * 1000L);
         };
-    }
-
-
-    /**
-     * 设置请求头
-     */
-    private List<Header> getDefaultHeaders() {
-        List<Header> headers = new ArrayList<>();
-        headers.add(new BasicHeader("User-Agent",
-                "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/31.0.1650.16 Safari/537.36"));
-        headers.add(new BasicHeader("Accept-Encoding", "gzip,deflate"));
-        headers.add(new BasicHeader("Accept-Language", "zh-CN"));
-        headers.add(new BasicHeader("Connection", "Keep-Alive"));
-        return headers;
     }
 
     private RestTemplate createRestTemplate(ClientHttpRequestFactory factory) {
