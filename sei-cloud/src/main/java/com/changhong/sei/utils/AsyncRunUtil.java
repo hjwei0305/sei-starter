@@ -1,6 +1,7 @@
 package com.changhong.sei.utils;
 
 import com.changhong.sei.core.context.ContextUtil;
+import com.changhong.sei.core.context.SessionUser;
 import com.changhong.sei.core.context.mock.MockUser;
 import com.changhong.sei.util.thread.ThreadLocalHolder;
 import org.slf4j.Logger;
@@ -30,7 +31,7 @@ public class AsyncRunUtil {
      * @param runnable 执行的方法
      */
     public void runAsync(Runnable runnable) {
-        runAsync(runnable, ContextUtil.getTenantCode(), ContextUtil.getUserAccount());
+        runAsync(runnable, ContextUtil.getSessionUser());
     }
 
     /**
@@ -47,6 +48,29 @@ public class AsyncRunUtil {
                 ThreadLocalHolder.begin();
                 // 设置当前用户Token
                 mockUser.mockUser(tenantCode, account);
+                runnable.run();
+            } catch (Exception e) {
+                LOG.error("异步任务执行异常.", e);
+            } finally {
+                // 释放线程参数
+                ThreadLocalHolder.end();
+            }
+        });
+    }
+
+    /**
+     * 异步执行一个方法（并传递指定用户的内部Token）
+     *
+     * @param runnable    执行的方法
+     * @param sessionUser 当前会话
+     */
+    public void runAsync(Runnable runnable, SessionUser sessionUser) {
+        CompletableFuture.runAsync(() -> {
+            try {
+                // 初始化线程变量
+                ThreadLocalHolder.begin();
+                // 设置当前用户Token
+                mockUser.mock(sessionUser);
                 runnable.run();
             } catch (Exception e) {
                 LOG.error("异步任务执行异常.", e);
