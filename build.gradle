@@ -35,9 +35,11 @@ subprojects  {
         //mavenCentral()
     }
 
-//    configurations {
+    configurations {
+        //在整个构建过程中排除
 //        all*.exclude group: "org.junit.vintage", module: "junit-vintage-engine"
-//    }
+        all*.exclude group: 'org.apache.logging.log4j'
+    }
 }
 
 
