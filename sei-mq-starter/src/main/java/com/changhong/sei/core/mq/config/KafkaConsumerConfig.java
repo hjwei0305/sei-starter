@@ -33,6 +33,15 @@ public class KafkaConsumerConfig {
         Map<String, Object> propsMap = new HashMap<>();
         propsMap.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServer);
         propsMap.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
+        /*
+         spring kafka 设置超时时间（session.timeout.ms和max.poll.interval.ms） 防止出现rebalance
+         kafka会有一个心跳线程来同步服务端，告诉服务端自己是正常可用的，默认是3秒发送一次心跳，超过session.timeout.ms（默认10秒）服务端没有收到心跳就会认为当前消费者失效。
+         max.poll.interval.ms决定了获取消息后提交偏移量的最大时间，超过设定的时间（默认5分钟），服务端也会认为该消费者失效。
+         */
+        // 毫秒
+        propsMap.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 15000);
+        // 毫秒
+        propsMap.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 300000);
         propsMap.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         propsMap.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         propsMap.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
