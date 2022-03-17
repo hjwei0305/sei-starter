@@ -40,6 +40,9 @@ subprojects  {
 //        all*.exclude group: "org.junit.vintage", module: "junit-vintage-engine"
         all*.exclude group: 'org.apache.logging.log4j'
     }
+
+    // 自定义springboot 依赖的logback版本
+    ext['logback.version'] = "$logbackVersion"
 }
 
 
